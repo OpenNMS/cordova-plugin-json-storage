@@ -160,12 +160,7 @@ public class CloudStoragePlugin extends CordovaPlugin {
         Arrays.sort(entries);
         final JSONArray ret = new JSONArray();
         for (final File entry : entries) {
-            final String relativeEntry = entry.getAbsolutePath().replace((root.endsWith("/")? root:root+"/"), "");
-            if (relativeEntry.startsWith("/")) {
-                Log.d(TAG, "Er?  Relative entry is " + relativeEntry);
-            } else {
-                ret.put(relativeEntry);
-            }
+            ret.put(entry.getName());
         }
         return new CloudStorageResult(true, ret);
     }

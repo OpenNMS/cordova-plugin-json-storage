@@ -305,7 +305,12 @@
   NSString *dirName = [self getFilePath:path synced:synced];
   BOOL isDir;
   if ([[NSFileManager defaultManager] fileExistsAtPath:dirName isDirectory:&isDir] && isDir) {
-    return [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dirName error:error];
+    NSArray *entries = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dirName error:error];
+    NSMutableArray *ret = [NSMutableArray array];
+    for (id entry in entries) {
+      [ret addObject:[entry lastPathComponent]];
+    }
+    return ret;
   } else {
     NSString *failureReason = [NSString stringWithFormat:@"The directory '%@' does not exist.", path];
     NSDictionary *userInfo = @{
