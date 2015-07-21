@@ -53,10 +53,10 @@ if (typeof angular !== "undefined") {
 			var success = function(response) {
 				if (async) {
 					$timeout(function() {
-						deferred.resolve(response);
+						deferred.resolve(response.contents);
 					});
 				} else {
-					deferred.resolve(response);
+					deferred.resolve(response.contents);
 				}
 			};
 			
