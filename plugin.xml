@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  id="org.opennms.cordova.storage"
+  version="0.1.0">
+
+    <name>Cordova Cloud Storage Plugin</name>
+    <description>Synchronized cloud JSON data store.</description>
+
+    <engines>
+        <engine name="cordova" version=">=3.0.0" />
+    </engines>
+
+    <js-module src="www/cloud-storage.js" name="CloudStorage">
+        <clobbers target="CloudStorage" />
+        <clobbers target="window.plugins.CloudStorage" />
+    </js-module>
+
+    <!-- ios -->
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="CloudStorage">
+                <param name="ios-package" value="ONMSCloudStorage"/>
+            </feature>
+        </config-file>
+
+        <header-file src="src/ios/ONMSCloudStorage.h" />
+        <source-file src="src/ios/ONMSCloudStorage.m" />
+        
+        <!--
+        <framework src="Security.framework" />
+        <framework src="SystemConfiguration.framework" />
+        -->
+    </platform>
+
+    <!--android -->
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="CloudStorage">
+                <param name="android-package" value="org.opennms.cordova.storage.CloudStoragePlugin"/>
+            </feature>
+        </config-file>
+
+        <!--
+        <framework src="com.google.android.gms:play-services-base:+" />
+        -->
+
+        <source-file src="src/android/org/opennms/cordova/storage/CloudStoragePlugin.java" target-dir="src/org/opennms/cordova/storage/" />
+        <source-file src="src/android/org/opennms/cordova/storage/CloudStorageResult.java" target-dir="src/org/opennms/cordova/storage/" />
+    </platform>
+</plugin>

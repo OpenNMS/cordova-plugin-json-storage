@@ -1,0 +1,1 @@
+Cordova Cloud Storage Plugin
