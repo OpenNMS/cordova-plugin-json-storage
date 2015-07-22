@@ -108,19 +108,19 @@ if (typeof angular !== "undefined") {
 		
 		return {
 			setBackend: function(backend) {
-				makePromise(CloudStorage.setBackend, [backend]);
+				return makePromise(CloudStorage.setBackend, [backend]);
 			},
 			readFile: function(filename) {
-				makePromise(CloudStorage.readFile, [filename]);
+				return makePromise(CloudStorage.readFile, [filename]);
 			},
 			writeFile: function(filename, data) {
-				makePromise(CloudStorage.writeFile, [filename, data]);
+				return makePromise(CloudStorage.writeFile, [filename, data]);
 			},
 			removeFile: function(filename) {
-				makePromise(CloudStorage.removeFile, [filename]);
+				return makePromise(CloudStorage.removeFile, [filename]);
 			},
 			listFiles: function(path) {
-				makePromise(CloudStorage.listFiles, [path]);
+				return makePromise(CloudStorage.listFiles, [path]);
 			},
 		};
 	});
