@@ -36,7 +36,6 @@ function assertInitialized() {
 		backend = 'local';
 	}
 }
-assertInitialized();
 
 var CloudStorage = {
 	setBackend: function(b, success, failure) {
