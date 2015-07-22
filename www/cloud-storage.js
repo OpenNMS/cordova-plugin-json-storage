@@ -4,134 +4,43 @@
 
 var exec = require('cordova/exec');
 
-function LocalBackend() {}
-LocalBackend.prototype.readFile = function(filename, success, failure) {
-	exec(function s(response) { success(response.contents); }, failure, 'CloudStorage', 'onmsGetJsonFileContents', [filename]);
-};
-LocalBackend.prototype.writeFile = function(filename, data, success, failure) {
-	exec(function s(response) { success(response.contents); }, failure, 'CloudStorage', 'onmsSetJsonFileContents', [filename, data]);
-};
-LocalBackend.prototype.removeFile = function(filename, success, failure) {
-	exec(function s(response) { success(response.contents); }, failure, 'CloudStorage', 'onmsRemoveJsonFile', [filename]);
-};
-LocalBackend.prototype.listFiles = function(path, success, failure) {
-	exec(function s(response) { success(response.contents); }, failure, 'CloudStorage', 'onmsListJsonFiles', [path]);
-};
+var backends = {};
+var backend = undefined;
 
-var backends = {
-	local: new LocalBackend()
-};
+var _initialized = false;
+function assertInitialized() {
+	if (_initialized) { return; }
+	_initialized = true;
 
-if (iCloudKV) {
-	var callSuccess = function(cb, data) {
-		var ret = { success: true };
-		if (data) {
-			ret.contents = data;
+	var attemptedBackends = [
+		require('org.opennms.cordova.storage.backends.local'),
+		require('org.opennms.cordova.storage.backends.icloud')
+	], i, len = attemptedBackends.length, be;
+
+	for (i=0; i < len; i++) {
+		be = attemptedBackends[i];
+		if (be && be.name) {
+			console.log('CloudStorage: checking plugin: ' + be.name);
+			if (be.isValid && be.isValid()) {
+				console.log('CloudStorage: ' + be.name + ' is valid.');
+				backends[be.name] = be; 
+			} else {
+				console.log('CloudStorage: ' + be.name + ' is not valid.');
+			}
 		}
-		cb(ret);
-	};
-	var callError = function(cb, err) {
-		var ret = { success: false };
-		if (err) {
-			ret.error = err;
-		}
-		cb(ret);
-	};
-	var getIndex = function(cb) {
-		iCloudKV.load('_index', function success(value) {
-			value = JSON.parse(value);
-			cb(value);
-		}, function failure(err) {
-			console.log('CloudStorage: iCloud: WARNING: getIndex failed. ' + JSON.stringify(err));
-			cb([]);
-		});
-	};
-	var updateIndex = function(index, s, f) {
-		iCloudKV.save('_index', JSON.stringify(index), function success() {
-			console.log('CloudStorage: iCloud: updated index: ' + JSON.stringify(index));
-			s(index);
-		}, function failure(err) {
-			console.log('CloudStorage: iCloud: WARNING: updateIndex failed. ' + JSON.stringify(err));
-			callError(f, err);
-		});
-	};
-	backends.icloud = {
-		readFile: function(filename, s, f) {
-			iCloudKV.load(encodeURIComponent(filename), function success(value) {
-				console.log('CloudStorage: iCloud: read ' + filename + ': ' + value);
-				callSuccess(s, JSON.parse(value));
-			}, function failure(err) {
-				console.log('CloudStorage: iCloud: ' + filename + ' failure: ' + JSON.stringify(err));
-				callError(f, err);
-			});
-		},
-		writeFile: function(filename, data, s, f) {
-			data = JSON.stringify(data);
+	}
 
-			iCloudKV.save(encodeURIComponent(filename), data, function success(value) {
-				console.log('CloudStorage: iCloud: wrote ' + filename + ': ' + JSON.stringify(value));
-				getIndex(function callback(index) {
-					if (index.indexOf(filename) === -1) {
-						index.push(filename);
-						index.sort();
-						updateIndex(index, function() {
-							callSuccess(s, value);
-						}, function(err) {
-							callError(f, err);
-						});
-					} else {
-						callSuccess(s, value);
-					}
-				});
-			}, function failure(err) {
-				console.log('CloudStorage: iCloud: ' + filename + ' failure: ' + JSON.stringify(err));
-				callError(f, err);
-			});
-		},
-		removeFile: function(filename, s, f) {
-			var doRemove = function() {
-				return iCloudKV.remove(encodeURIComponent(filename), function success(value) {
-					console.log('CloudStorage: iCloud: removed ' + filename);
-					callSuccess(s, value);
-				}, function failure(err) {
-					console.log('CloudStorage: iCloud: ' + filename + ' failure: ' + JSON.stringify(err));
-					callError(f, err);
-				});
-			};
-
-			return getIndex(function callback(index) {
-				var loc = index.indexOf(filename);
-				if (loc !== -1) {
-					index.splice(loc, 1);
-					return updateIndex(index, function() {
-						return doRemove();
-					}, function(err) {
-						callError(f, err);
-					});
-				} else {
-					return doRemove();
-				}
-			});
-		},
-		listFiles: function(path, s, f) {
-			return getIndex(function callback(index) {
-				callSuccess(s, index);
-			});
-		},
-	};
-} else {
-	console.log('CloudStorage: iCloud plugin not available.');
+	if (backends.icloud) {
+		backend = 'icloud';
+	} else {
+		backend = 'local';
+	}
 }
-
-console.log('CloudStorage: available backends: ' + Object.keys(backends).join(', '));
-
-var backend = 'local';
-if (backends.icloud) {
-	backend = 'icloud';
-}
+assertInitialized();
 
 var CloudStorage = {
 	setBackend: function(b, success, failure) {
+		assertInitialized();
 		if (backends[b]) {
 			backend = b;
 			success(b);
@@ -143,18 +52,22 @@ var CloudStorage = {
 		}
 	},
 	readFile: function(filename, success, failure) {
+		assertInitialized();
 		console.log('CloudStorage: ' + backend + '.readFile(' + filename + ')');
 		backends[backend].readFile(filename, success, failure);
 	},
 	writeFile: function(filename, data, success, failure) {
+		assertInitialized();
 		console.log('CloudStorage: ' + backend + '.writeFile(' + filename + ', ...)');
 		backends[backend].writeFile(filename, data, success, failure);
 	},
 	removeFile: function(filename, success, failure) {
+		assertInitialized();
 		console.log('CloudStorage: ' + backend + '.removeFile(' + filename + ')');
 		backends[backend].removeFile(filename, success, failure);
 	},
 	listFiles: function(path, success, failure) {
+		assertInitialized();
 		console.log('CloudStorage: ' + backend + '.listFiles(' + path + ')');
 		backends[backend].listFiles(path, success, failure);
 	},
