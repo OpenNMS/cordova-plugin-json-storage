@@ -15,17 +15,12 @@
 - (void) onmsRemoveJsonFile:(CDVInvokedUrlCommand *)command;
 - (void) onmsListJsonFiles:(CDVInvokedUrlCommand *)command;
 
-- (void) onmsGetPrivateJsonFileContents:(CDVInvokedUrlCommand *)command;
-- (void) onmsSetPrivateJsonFileContents:(CDVInvokedUrlCommand *)command;
-- (void) onmsRemovePrivateJsonFile:(CDVInvokedUrlCommand *)command;
-- (void) onmsListPrivateJsonFiles:(CDVInvokedUrlCommand *)command;
-
 #pragma mark - Internal
 
-- (BOOL) writeFile:(NSString *)toPath withData:(NSData *)data synced:(BOOL)synced error:(__autoreleasing NSError **)error;
-- (NSData *) readFile:(NSString *)fromPath synced:(BOOL)synced error:(__autoreleasing NSError **)error;
-- (BOOL) removeFile:(NSString *)filePath synced:(BOOL)synced error:(__autoreleasing NSError **)error;
-- (NSString *) getFilePath:(NSString *)forPath synced:(BOOL)synced;
-- (NSArray *) readDirectory:(NSString *)path synced:(BOOL)synced error:(__autoreleasing NSError **)error;
+- (BOOL) writeFile:(NSString *)toPath withData:(NSData *)data error:(__autoreleasing NSError **)error;
+- (NSData *) readFile:(NSString *)fromPath error:(__autoreleasing NSError **)error;
+- (BOOL) removeFile:(NSString *)filePath error:(__autoreleasing NSError **)error;
+- (NSString *) getFilePath:(NSString *)forPath;
+- (NSArray *) readDirectory:(NSString *)path error:(__autoreleasing NSError **)error;
 
 @end

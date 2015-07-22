@@ -18,11 +18,6 @@ import org.json.JSONObject;
 import android.util.Log;
 
 public class CloudStoragePlugin extends CordovaPlugin {
-    public static enum StorageType {
-        PUBLIC,
-        PRIVATE
-    }
-
     private static final String TAG = "CloudStoragePlugin";
 
     @Override
@@ -30,30 +25,17 @@ public class CloudStoragePlugin extends CordovaPlugin {
         CloudStorageResult result = null;
         if ("onmsGetJsonFileContents".equals(action)) {
             final String filename = args.getString(0);
-            result = readJson(filename, StorageType.PUBLIC);
+            result = readJson(filename);
         } else if ("onmsSetJsonFileContents".equals(action)) {
             final String filename = args.getString(0);
             final JSONObject contents = args.getJSONObject(1);
-            result = writeJson(filename, contents, StorageType.PUBLIC);
+            result = writeJson(filename, contents);
         } else if ("onmsRemoveJsonFile".equals(action)) {
             final String filename = args.getString(0);
-            result = removeJsonFile(filename, StorageType.PUBLIC);
+            result = removeJsonFile(filename);
         } else if ("onmsListJsonFiles".equals(action)) {
             final String path = args.getString(0);
-            result = listFiles(path, StorageType.PUBLIC);
-        } else if ("onmsGetPrivateJsonFileContents".equals(action)) {
-            final String filename = args.getString(0);
-            result = readJson(filename, StorageType.PRIVATE);
-        } else if ("onmsSetPrivateJsonFileContents".equals(action)) {
-            final String filename = args.getString(0);
-            final JSONObject contents = args.getJSONObject(1);
-            result = writeJson(filename, contents, StorageType.PRIVATE);
-        } else if ("onmsRemovePrivateJsonFile".equals(action)) {
-            final String filename = args.getString(0);
-            result = removeJsonFile(filename, StorageType.PRIVATE);
-        } else if ("onmsListPrivateJsonFiles".equals(action)) {
-            final String path = args.getString(0);
-            result = listFiles(path, StorageType.PRIVATE);
+            result = listFiles(path);
         }
 
         if (result != null) {
@@ -70,23 +52,13 @@ public class CloudStoragePlugin extends CordovaPlugin {
         }
     }
 
-    private File getStorageLocation(final String relativePath, final StorageType type) {
+    private File getStorageLocation(final String relativePath) {
         final File rootDirectory = cordova.getActivity().getFilesDir();
-        final File storageDirectory;
-        switch (type) {
-        case PRIVATE:
-            storageDirectory = new File(rootDirectory, "NoCloud");
-            break;
-        case PUBLIC:
-        default:
-            storageDirectory = new File(rootDirectory, "Cloud");
-            break;
-        }
-        return new File(storageDirectory.getAbsolutePath() + File.separator + relativePath);
+        return new File(rootDirectory.getAbsolutePath() + File.separator + relativePath);
     }
 
-    private CloudStorageResult readJson(final String filePath, final StorageType type) {
-        final File inputFile = getStorageLocation(filePath, type);
+    private CloudStorageResult readJson(final String filePath) {
+        final File inputFile = getStorageLocation(filePath);
         Log.d(TAG, "Reading: " + inputFile);
         if (!inputFile.exists() || !inputFile.canRead()) {
             return new CloudStorageResult(false, "Unable to read file.", filePath + " does not exist or is not readable.");
@@ -115,8 +87,8 @@ public class CloudStoragePlugin extends CordovaPlugin {
         }
     }
 
-    private CloudStorageResult writeJson(final String filePath, final JSONObject contents, final StorageType type) {
-        final File outputFile = getStorageLocation(filePath, type);
+    private CloudStorageResult writeJson(final String filePath, final JSONObject contents) {
+        final File outputFile = getStorageLocation(filePath);
         Log.d(TAG, "Writing: " + outputFile);
         makeParent(outputFile);
 
@@ -139,8 +111,8 @@ public class CloudStoragePlugin extends CordovaPlugin {
         }
     }
 
-    private CloudStorageResult removeJsonFile(final String filePath, final StorageType type) {
-        final File removedFile = getStorageLocation(filePath, type);
+    private CloudStorageResult removeJsonFile(final String filePath) {
+        final File removedFile = getStorageLocation(filePath);
         Log.d(TAG,  "Removing: " + removedFile);
         if (!removedFile.exists()) {
             return new CloudStorageResult(true);
@@ -148,9 +120,9 @@ public class CloudStoragePlugin extends CordovaPlugin {
         return new CloudStorageResult(removedFile.delete());
     }
 
-    private CloudStorageResult listFiles(final String path, final StorageType type) {
-        final File directory = getStorageLocation(path, type);
-        final String root = getStorageLocation("", type).getAbsolutePath();
+    private CloudStorageResult listFiles(final String path) {
+        final File directory = getStorageLocation(path);
+        final String root = getStorageLocation("").getAbsolutePath();
         Log.d(TAG, "root directory = " + root);
 
         if (!directory.exists()) {

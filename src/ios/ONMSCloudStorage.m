@@ -14,7 +14,7 @@
   NSString *filePath = [command.arguments objectAtIndex:0];
 
   NSError *error = nil;
-  NSData *data = [self readFile:filePath synced:@YES error:&error];
+  NSData *data = [self readFile:filePath error:&error];
 
   if (error) {
     [self returnError:error forCommand:command];
@@ -55,7 +55,7 @@
     return;
   }
 
-  BOOL written = [self writeFile:toPath withData:jsonData synced:@YES error:&error];
+  BOOL written = [self writeFile:toPath withData:jsonData error:&error];
   
   if (!written) {
     [self returnError:error forCommand:command];
@@ -79,7 +79,7 @@
 - (void) onmsRemoveJsonFile:(CDVInvokedUrlCommand *)command {
   NSString *path = [command.arguments objectAtIndex:0];
   NSError *error;
-  BOOL success = [self removeFile:path synced:@YES error:&error];
+  BOOL success = [self removeFile:path error:&error];
   if (!success) {
     [self returnError:error forCommand:command];
     return;
@@ -102,125 +102,12 @@
 - (void) onmsListJsonFiles:(CDVInvokedUrlCommand *)command {
   NSString *path = [command.arguments objectAtIndex:0];
   NSError *error;
-  NSArray *results = [self readDirectory:path synced:@YES error:&error];
+  NSArray *results = [self readDirectory:path error:&error];
   if (error) {
     [self returnError:error forCommand:command];
     return;
   }
 
-  NSDictionary *jsonObj = [ [NSDictionary alloc]
-                           initWithObjectsAndKeys :
-                           @YES, @"success",
-                           results, @"contents",
-                           nil
-                           ];
-  
-  CDVPluginResult *pluginResult = [ CDVPluginResult
-                                   resultWithStatus    : CDVCommandStatus_OK
-                                   messageAsDictionary : jsonObj
-                                   ];
-  
-  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-}
-
-- (void) onmsGetPrivateJsonFileContents:(CDVInvokedUrlCommand *)command {
-  NSString *filePath = [command.arguments objectAtIndex:0];
-
-  NSError *error = nil;
-  NSData *data = [self readFile:filePath synced:@NO error:&error];
-
-  if (error) {
-    [self returnError:error forCommand:command];
-    return;
-  }
-
-  NSDictionary *jsonData = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
-
-  if (error) {
-    [self returnError:error forCommand:command];
-    return;
-  }
-  
-  NSDictionary *jsonObj = [
-                           [NSDictionary alloc]
-                           initWithObjectsAndKeys :
-                           jsonData, @"contents",
-                           @YES, @"success",
-                           nil
-                           ];
-
-  CDVPluginResult *pluginResult = [ CDVPluginResult
-                                   resultWithStatus    : CDVCommandStatus_OK
-                                   messageAsDictionary : jsonObj
-                                   ];
-
-  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-}
-
-- (void) onmsSetPrivateJsonFileContents:(CDVInvokedUrlCommand *)command {
-  NSString *toPath = [command.arguments objectAtIndex:0];
-  NSDictionary *jsonDict = [command.arguments objectAtIndex:1];
-  NSError *error = nil;
-  NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonDict options:kNilOptions error:&error];
-
-  if (error) {
-    [self returnError:error forCommand:command];
-    return;
-  }
-
-  BOOL written = [self writeFile:toPath withData:jsonData synced:@NO error:&error];
-  
-  if (!written) {
-    [self returnError:error forCommand:command];
-    return;
-  }
-  
-  NSDictionary *jsonObj = [ [NSDictionary alloc]
-                           initWithObjectsAndKeys :
-                           @YES, @"success",
-                           nil
-                           ];
-  
-  CDVPluginResult *pluginResult = [ CDVPluginResult
-                                   resultWithStatus    : CDVCommandStatus_OK
-                                   messageAsDictionary : jsonObj
-                                   ];
-  
-  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-}
-
-- (void) onmsRemovePrivateJsonFile:(CDVInvokedUrlCommand *)command {
-  NSString *path = [command.arguments objectAtIndex:0];
-  NSError *error;
-  BOOL success = [self removeFile:path synced:@NO error:&error];
-  if (!success) {
-    [self returnError:error forCommand:command];
-    return;
-  }
-
-  NSDictionary *jsonObj = [ [NSDictionary alloc]
-                           initWithObjectsAndKeys :
-                           @YES, @"success",
-                           nil
-                           ];
-  
-  CDVPluginResult *pluginResult = [ CDVPluginResult
-                                   resultWithStatus    : CDVCommandStatus_OK
-                                   messageAsDictionary : jsonObj
-                                   ];
-  
-  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-}
-
-- (void) onmsListPrivateJsonFiles:(CDVInvokedUrlCommand *)command {
-  NSString *path = [command.arguments objectAtIndex:0];
-  NSError *error;
-  NSArray *results = [self readDirectory:path synced:@NO error:&error];
-  if (error) {
-    [self returnError:error forCommand:command];
-    return;
-  }
-  
   NSDictionary *jsonObj = [ [NSDictionary alloc]
                            initWithObjectsAndKeys :
                            @YES, @"success",
@@ -238,8 +125,8 @@
 
 #pragma mark - Internal
 
-- (NSData *) readFile:(NSString*)fromPath synced:(BOOL)synced error:(__autoreleasing NSError **)error {
-  NSString *fileName = [self getFilePath:fromPath synced:synced];
+- (NSData *) readFile:(NSString*)fromPath error:(__autoreleasing NSError **)error {
+  NSString *fileName = [self getFilePath:fromPath];
 
   BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:fileName];
   if (!fileExists) {
@@ -261,8 +148,8 @@
   return fileContents;
 }
 
-- (BOOL) writeFile:(NSString *)toPath withData:(NSData *)fileData synced:(BOOL)synced error:(__autoreleasing NSError **)error {
-  NSString *fileName = [self getFilePath:toPath synced:synced];
+- (BOOL) writeFile:(NSString *)toPath withData:(NSData *)fileData error:(__autoreleasing NSError **)error {
+  NSString *fileName = [self getFilePath:toPath];
   
   BOOL success = [[NSFileManager defaultManager] createDirectoryAtPath:[fileName stringByDeletingLastPathComponent] 
     withIntermediateDirectories:YES
@@ -278,8 +165,8 @@
                 error       : error];
 }
 
-- (BOOL) removeFile:(NSString *)filePath synced:(BOOL)synced error:(__autoreleasing NSError **)error {
-  NSString *fileName = [self getFilePath:filePath synced:synced];
+- (BOOL) removeFile:(NSString *)filePath error:(__autoreleasing NSError **)error {
+  NSString *fileName = [self getFilePath:filePath];
   if ([[NSFileManager defaultManager] isDeletableFileAtPath:fileName]) {
     return [[NSFileManager defaultManager] removeItemAtPath:fileName error:error];
   } else {
@@ -293,16 +180,14 @@
   }
 }
 
-- (NSString *) getFilePath:(NSString *)forPath synced:(BOOL)synced {
+- (NSString *) getFilePath:(NSString *)forPath {
   NSString *libPath = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES)[0];
-  NSString *libPathSync = [libPath stringByAppendingPathComponent:@"Cloud"];
-  NSString *libPathNoSync = [libPath stringByAppendingPathComponent:@"NoCloud"];
 
-  return [NSString stringWithFormat:@"%@/%@", (synced?libPathSync:libPathNoSync), forPath];
+  return [NSString stringWithFormat:@"%@/%@", libPath, forPath];
 }
 
-- (NSArray *) readDirectory:(NSString *)path synced:(BOOL)synced error:(__autoreleasing NSError **)error {
-  NSString *dirName = [self getFilePath:path synced:synced];
+- (NSArray *) readDirectory:(NSString *)path error:(__autoreleasing NSError **)error {
+  NSString *dirName = [self getFilePath:path];
   BOOL isDir;
   if ([[NSFileManager defaultManager] fileExistsAtPath:dirName isDirectory:&isDir] && isDir) {
     NSArray *entries = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dirName error:error];
