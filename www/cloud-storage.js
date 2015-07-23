@@ -2,8 +2,7 @@
 
 /*global angular*/
 
-var exec = require('cordova/exec');
-
+var exec;
 var backends = {};
 var backend = undefined;
 
@@ -12,6 +11,10 @@ function assertInitialized() {
 	if (_initialized) { return; }
 	_initialized = true;
 
+	document.removeEventListener('deviceready', assertInitialized, false);
+	console.log('CloudStorage: Initializing.');
+
+	exec = require('cordova/exec');
 	var attemptedBackends = [
 		require('org.opennms.cordova.storage.backends.local'),
 		require('org.opennms.cordova.storage.backends.icloud')
@@ -20,12 +23,12 @@ function assertInitialized() {
 	for (i=0; i < len; i++) {
 		be = attemptedBackends[i];
 		if (be && be.name) {
-			console.log('CloudStorage: checking plugin: ' + be.name);
+			console.log('CloudStorage: Checking plugin "' + be.name + '".');
 			if (be.isValid && be.isValid()) {
-				console.log('CloudStorage: ' + be.name + ' is valid.');
+				console.log('CloudStorage: Backend "' + be.name + '"" is valid.');
 				backends[be.name] = be; 
 			} else {
-				console.log('CloudStorage: ' + be.name + ' is not valid.');
+				console.log('CloudStorage: Backend "' + be.name + '"" is not valid.');
 			}
 		}
 	}
@@ -36,6 +39,8 @@ function assertInitialized() {
 		backend = 'local';
 	}
 }
+
+document.addEventListener('deviceready', assertInitialized, false);
 
 var CloudStorage = {
 	setBackend: function(b, success, failure) {
