@@ -15,12 +15,6 @@
         <clobbers target="CloudStorage" />
         <clobbers target="window.plugins.CloudStorage" />
     </js-module>
-    <js-module src="www/backends/local.js" name="backends.local">
-        <clobbers target="LocalBackend" />
-    </js-module>
-    <js-module src="www/backends/icloud.js" name="backends.icloud">
-        <clobbers target="iCloudBackend" />
-    </js-module>
 
     <dependency id="fr.pierrickrouxel.cordova.plugin.iCloudKV" url="https://github.com/pierrickrouxel/phonegap-icloudkv-plugin.git" />
 

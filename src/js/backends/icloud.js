@@ -1,11 +1,13 @@
+/* jshint -W097 */
+
 'use strict';
 
-function iCloudBackend() {
-	var $$ = this;
-	$$.name = 'icloud';
+/* global console */
+/* global require */
 
-	var iCloudKV = require('fr.pierrickrouxel.cordova.plugin.iCloudKV.iCloudKV');
+var iCloudKV = require('fr.pierrickrouxel.cordova.plugin.iCloudKV.iCloudKV');
 
+function ICloudBackend() {
 	var callSuccess = function(cb, data) {
 		var ret = { success: true };
 		if (data) {
@@ -40,7 +42,7 @@ function iCloudBackend() {
 		});
 	};
 
-	$$.isValid = function() {
+	this.isValid = function() {
 		if (iCloudKV && iCloudKV.save) {
 			return true;
 		} else {
@@ -48,7 +50,7 @@ function iCloudBackend() {
 		}
 	};
 
-	$$.readFile = function(filename, s, f) {
+	this.readFile = function(filename, s, f) {
 		iCloudKV.load(encodeURIComponent(filename), function success(value) {
 			console.log('CloudStorage: iCloud: read ' + filename + ': ' + value);
 			callSuccess(s, JSON.parse(value));
@@ -58,7 +60,7 @@ function iCloudBackend() {
 		});
 	};
 
-	$$.writeFile = function(filename, data, s, f) {
+	this.writeFile = function(filename, data, s, f) {
 		data = JSON.stringify(data);
 
 		iCloudKV.save(encodeURIComponent(filename), data, function success(value) {
@@ -82,7 +84,7 @@ function iCloudBackend() {
 		});
 	};
 
-	$$.removeFile = function(filename, s, f) {
+	this.removeFile = function(filename, s, f) {
 		var doRemove = function() {
 			return iCloudKV.remove(encodeURIComponent(filename), function success(value) {
 				console.log('CloudStorage: iCloud: removed ' + filename);
@@ -108,11 +110,11 @@ function iCloudBackend() {
 		});
 	};
 
-	$$.listFiles = function(path, s, f) {
+	this.listFiles = function(path, s, f) {
 		return getIndex(function callback(index) {
 			callSuccess(s, index);
 		});
 	};
 }
 
-module.exports = new iCloudBackend();
+ICloudBackend.prototype.name = 'icloud';

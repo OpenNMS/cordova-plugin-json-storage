@@ -1,0 +1,17 @@
+{
+  "name": "cordova-plugin-storage",
+  "version": "0.1.0",
+  "description": "Cordova Cloud Storage Plugin",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/OpenNMS/cordova-plugin-storage.git"
+  },
+  "devDependencies": {
+    "gulp-concat": "*",
+    "gulp-jshint": "*",
+    "gulp-sourcemaps": "*",
+    "jshint": "*",
+    "jshint-stylish": "*"
+  },
+  "license": "MIT"
+}
