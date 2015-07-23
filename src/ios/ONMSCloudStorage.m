@@ -199,7 +199,7 @@
   } else {
     NSString *failureReason = [NSString stringWithFormat:@"The directory '%@' does not exist.", path];
     NSDictionary *userInfo = @{
-                               NSLocalizedDescriptionKey: NSLocalizedString(@"Directory missing..", nil),
+                               NSLocalizedDescriptionKey: NSLocalizedString(@"Directory missing.", nil),
                                NSLocalizedFailureReasonErrorKey: NSLocalizedString(failureReason, nil)
                                };
     if (error != NULL) *error = [NSError errorWithDomain:@"org.opennms.cordova.storage" code:3 userInfo:userInfo];
