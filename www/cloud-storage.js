@@ -2,7 +2,6 @@
 
 /*global angular*/
 
-var exec;
 var backends = {};
 var backend = undefined;
 
@@ -14,7 +13,6 @@ function assertInitialized() {
 	document.removeEventListener('deviceready', assertInitialized, false);
 	console.log('CloudStorage: Initializing.');
 
-	exec = require('cordova/exec');
 	var attemptedBackends = [
 		require('org.opennms.cordova.storage.backends.local'),
 		require('org.opennms.cordova.storage.backends.icloud')

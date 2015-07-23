@@ -1,5 +1,7 @@
 'use strict';
 
+var exec = require('cordova/exec');
+
 function LocalBackend() {}
 LocalBackend.prototype.name = 'local';
 LocalBackend.prototype.isValid = function() {
