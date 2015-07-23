@@ -2,6 +2,7 @@
 
 /*global angular*/
 
+var debug = false;
 var backends = {};
 var backend = undefined;
 
@@ -41,9 +42,12 @@ function assertInitialized() {
 document.addEventListener('deviceready', assertInitialized, false);
 
 var CloudStorage = {
+	setDebug: function(d) {
+		debug = !!d;
+	},
 	setBackend: function(b, success, failure) {
-		assertInitialized();
 		if (backends[b]) {
+			if (debug) { console.log('CloudStorage: setting backend to ' + b); }
 			backend = b;
 			success(b);
 		} else {
@@ -54,23 +58,19 @@ var CloudStorage = {
 		}
 	},
 	readFile: function(filename, success, failure) {
-		assertInitialized();
-		console.log('CloudStorage: ' + backend + '.readFile(' + filename + ')');
+		if (debug) { console.log('CloudStorage: ' + backend + '.readFile(' + filename + ')'); }
 		backends[backend].readFile(filename, success, failure);
 	},
 	writeFile: function(filename, data, success, failure) {
-		assertInitialized();
-		console.log('CloudStorage: ' + backend + '.writeFile(' + filename + ', ...)');
+		if (debug) { console.log('CloudStorage: ' + backend + '.writeFile(' + filename + ', ...)'); }
 		backends[backend].writeFile(filename, data, success, failure);
 	},
 	removeFile: function(filename, success, failure) {
-		assertInitialized();
-		console.log('CloudStorage: ' + backend + '.removeFile(' + filename + ')');
+		if (debug) { console.log('CloudStorage: ' + backend + '.removeFile(' + filename + ')'); }
 		backends[backend].removeFile(filename, success, failure);
 	},
 	listFiles: function(path, success, failure) {
-		assertInitialized();
-		console.log('CloudStorage: ' + backend + '.listFiles(' + path + ')');
+		if (debug) { console.log('CloudStorage: ' + backend + '.listFiles(' + path + ')'); }
 		backends[backend].listFiles(path, success, failure);
 	},
 };
@@ -82,16 +82,18 @@ if (typeof angular !== "undefined") {
 			var deferred = $q.defer();
 			
 			var success = function(response) {
+				if (debug) { console.log('CloudStorage: success: ' + angular.toJson(response)); }
 				if (async) {
 					$timeout(function() {
-						deferred.resolve(response.contents);
+						deferred.resolve(response);
 					});
 				} else {
-					deferred.resolve(response.contents);
+					deferred.resolve(response);
 				}
 			};
 			
 			var fail = function(response) {
+				if (debug) { console.log('CloudStorage: failure: ' + angular.toJson(response)); }
 				if (async) {
 					$timeout(function() {
 						deferred.reject(response);
@@ -110,6 +112,9 @@ if (typeof angular !== "undefined") {
 		}
 		
 		return {
+			setDebug: function(debug) {
+				return CloudStorage.setDebug(debug);
+			},
 			setBackend: function(backend) {
 				return makePromise(CloudStorage.setBackend, [backend]);
 			},
