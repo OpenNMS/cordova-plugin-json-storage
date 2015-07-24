@@ -34,10 +34,10 @@ function assertInitialized() {
 		if (be && be.name) {
 			console.log('CloudStorage: Checking plugin "' + be.name + '".');
 			if (be.isValid && be.isValid()) {
-				console.log('CloudStorage: Backend "' + be.name + '"" is valid.');
+				console.log('CloudStorage: Backend "' + be.name + '" is valid.');
 				backends[be.name] = be;
 			} else {
-				console.log('CloudStorage: Backend "' + be.name + '"" is not valid.');
+				console.log('CloudStorage: Backend "' + be.name + '" is not valid.');
 			}
 		}
 	}
