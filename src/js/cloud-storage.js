@@ -14,7 +14,7 @@
 
 var debug = false;
 var backends = {};
-var backend;
+var defaultBackend;
 
 var _initialized = false;
 function assertInitialized() {
@@ -43,21 +43,30 @@ function assertInitialized() {
 	}
 
 	if (backends.keychain) {
-		backend = 'keychain';
+		defaultBackend = 'keychain';
 	} else {
-		backend = 'local';
+		defaultBackend = 'local';
 	}
 }
+
+var getBackend = function(b) {
+	if (backends[b]) {
+		return backends[b];
+	} else if (b !== undefined) {
+		console.log('CloudStorage: Unknown backend "' + b + '": falling back to default ("' + defaultBackend + '")');
+	}
+	return backends[defaultBackend];
+};
 
 var CloudStorage = {
 	setDebug: function(d) {
 		debug = !!d;
 	},
-	setBackend: function(b, success, failure) {
+	setDefaultBackend: function(b, success, failure) {
 		assertInitialized();
 		if (backends[b]) {
 			if (debug) { console.log('CloudStorage: setting backend to ' + b); }
-			backend = b;
+			defaultBackend = b;
 			success(b);
 		} else {
 			var error = 'Unknown backend "' + b + '"';
@@ -66,32 +75,36 @@ var CloudStorage = {
 			failure(error);
 		}
 	},
-	readFile: function(filename, success, failure) {
+	readFile: function(filename, success, failure, backend) {
 		assertInitialized();
-		if (debug) { console.log('CloudStorage: ' + backend + '.readFile(' + filename + ')'); }
-		backends[backend].readFile(filename, success, failure);
+		var be = getBackend(backend);
+		if (debug) { console.log('CloudStorage: ' + be.name + '.readFile(' + filename + ')'); }
+		be.readFile(filename, success, failure);
 	},
-	writeFile: function(filename, data, success, failure) {
+	writeFile: function(filename, data, success, failure, backend) {
 		assertInitialized();
-		if (debug) { console.log('CloudStorage: ' + backend + '.writeFile(' + filename + ', ...)'); }
-		backends[backend].writeFile(filename, data, success, failure);
+		var be = getBackend(backend);
+		if (debug) { console.log('CloudStorage: ' + be.name + '.writeFile(' + filename + ', ...)'); }
+		be.writeFile(filename, data, success, failure);
 	},
-	removeFile: function(filename, success, failure) {
+	removeFile: function(filename, success, failure, backend) {
 		assertInitialized();
-		if (debug) { console.log('CloudStorage: ' + backend + '.removeFile(' + filename + ')'); }
-		backends[backend].removeFile(filename, success, failure);
+		var be = getBackend(backend);
+		if (debug) { console.log('CloudStorage: ' + be.name + '.removeFile(' + filename + ')'); }
+		be.removeFile(filename, success, failure);
 	},
-	listFiles: function(path, success, failure) {
+	listFiles: function(path, success, failure, backend) {
 		assertInitialized();
-		if (debug) { console.log('CloudStorage: ' + backend + '.listFiles(' + path + ')'); }
-		backends[backend].listFiles(path, success, failure);
+		var be = getBackend(backend);
+		if (debug) { console.log('CloudStorage: ' + be.name + '.listFiles(' + path + ')'); }
+		be.listFiles(path, success, failure);
 	},
 };
 
 if (typeof angular !== "undefined") {
 	console.log('CloudStorage: Angular is available.  Registering Angular module.');
 	angular.module('CloudStorage', []).factory('CloudStorage', function($timeout, $q) {
-		function makePromise(fn, args, async) {
+		function makePromise(fn, args, async, hasBackend) {
 			var deferred = $q.defer();
 
 			var success = function(response) {
@@ -116,8 +129,16 @@ if (typeof angular !== "undefined") {
 				}
 			};
 
+			var backend;
+			if (hasBackend) {
+				// pull the (optional) backend off the arg list, since it's always last
+				backend = args.pop();
+			}
 			args.push(success);
 			args.push(fail);
+			if (hasBackend) {
+				args.push(backend);
+			}
 
 			fn.apply(CloudStorage, args);
 
@@ -128,20 +149,20 @@ if (typeof angular !== "undefined") {
 			setDebug: function(debug) {
 				return CloudStorage.setDebug(debug);
 			},
-			setBackend: function(backend) {
-				return makePromise(CloudStorage.setBackend, [backend]);
+			setDefaultBackend: function(backend) {
+				return makePromise(CloudStorage.setDefaultBackend, [backend]);
 			},
-			readFile: function(filename) {
-				return makePromise(CloudStorage.readFile, [filename]);
+			readFile: function(filename, backend) {
+				return makePromise(CloudStorage.readFile, [filename, backend], false, true);
 			},
-			writeFile: function(filename, data) {
-				return makePromise(CloudStorage.writeFile, [filename, data]);
+			writeFile: function(filename, data, backend) {
+				return makePromise(CloudStorage.writeFile, [filename, data, backend], false, true);
 			},
-			removeFile: function(filename) {
-				return makePromise(CloudStorage.removeFile, [filename]);
+			removeFile: function(filename, backend) {
+				return makePromise(CloudStorage.removeFile, [filename, backend], false, true);
 			},
-			listFiles: function(path) {
-				return makePromise(CloudStorage.listFiles, [path]);
+			listFiles: function(path, backend) {
+				return makePromise(CloudStorage.listFiles, [path, backend], false, true);
 			},
 		};
 	});
