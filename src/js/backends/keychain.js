@@ -71,7 +71,7 @@ function KeychainBackend() {
 	};
 	var updateIndex = function(index, s, f) {
 		kc.setForKey(function success() {
-			console.log('KeychainBackend: updated index: ' + JSON.stringify(index));
+			//console.log('KeychainBackend: updated index: ' + JSON.stringify(index));
 			s(true);
 		}, function failure(err) {
 			console.log('KeychainBackend: WARNING: updateIndex failed. ' + JSON.stringify(err));
@@ -89,7 +89,7 @@ function KeychainBackend() {
 
 	this.readFile = function(filename, s, f) {
 		kc.getForKey(function success(result) {
-			console.log('KeychainBackend: read ' + filename + ': ' + result);
+			//console.log('KeychainBackend: read ' + filename + ': ' + result);
 			callSuccess(s, decode(result));
 		}, function failure(err) {
 			console.log('KeychainBackend: ' + filename + ' failure: ' + JSON.stringify(err));
@@ -101,7 +101,7 @@ function KeychainBackend() {
 		data = encode(data);
 
 		kc.setForKey(function success() {
-			console.log('KeychainBackend: wrote ' + filename);
+			//console.log('KeychainBackend: wrote ' + filename);
 			getIndex(function callback(index) {
 				if (index.indexOf(filename) === -1) {
 					index.push(filename);
@@ -124,7 +124,7 @@ function KeychainBackend() {
 	this.removeFile = function(filename, s, f) {
 		var doRemove = function() {
 			kc.removeForKey(function success() {
-				console.log('KeychainBackend: removed ' + filename);
+				//console.log('KeychainBackend: removed ' + filename);
 				callSuccess(s, true);
 			}, function failure(err) {
 				console.log('KeychainBackend: ' + filename + ' failure: ' + err);
