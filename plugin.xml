@@ -16,7 +16,7 @@
         <clobbers target="window.plugins.CloudStorage" />
     </js-module>
 
-    <dependency id="fr.pierrickrouxel.cordova.plugin.iCloudKV" url="https://github.com/pierrickrouxel/phonegap-icloudkv-plugin.git" />
+    <dependency id="com.shazron.cordova.plugin.keychainutil" url="https://github.com/shazron/KeychainPlugin.git" />
 
     <!-- ios -->
     <platform name="ios">

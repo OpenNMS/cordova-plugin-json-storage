@@ -9,7 +9,7 @@
 /* global require */
 /* global window */
 
-/* global ICloudBackend */
+/* global KeychainBackend */
 /* global LocalBackend */
 
 var debug = false;
@@ -24,7 +24,7 @@ function assertInitialized() {
 	console.log('CloudStorage: Initializing.');
 
 	var attemptedBackends = [
-		new ICloudBackend(),
+		new KeychainBackend(),
 		new LocalBackend()
 	], i, len = attemptedBackends.length, be;
 
@@ -42,8 +42,8 @@ function assertInitialized() {
 		}
 	}
 
-	if (backends.icloud) {
-		backend = 'icloud';
+	if (backends.keychain) {
+		backend = 'keychain';
 	} else {
 		backend = 'local';
 	}
