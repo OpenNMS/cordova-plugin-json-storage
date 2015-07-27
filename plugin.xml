@@ -2,10 +2,10 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
   xmlns:android="http://schemas.android.com/apk/res/android"
   id="org.opennms.cordova.storage"
-  version="0.1.0">
+  version="0.1.0-dev">
 
-    <name>Cordova Cloud Storage Plugin</name>
-    <description>Synchronized cloud JSON data store.</description>
+    <name>Cordova JSON Storage Plugin</name>
+    <description>Cloud-capable JSON data store.</description>
 
     <engines>
         <engine name="cordova" version=">=3.0.0" />

@@ -27,7 +27,7 @@
     [self returnError:error forCommand:command];
     return;
   }
-  
+
   NSDictionary *jsonObj = [
                            [NSDictionary alloc]
                            initWithObjectsAndKeys :
@@ -56,23 +56,23 @@
   }
 
   BOOL written = [self writeFile:toPath withData:jsonData error:&error];
-  
+
   if (!written) {
     [self returnError:error forCommand:command];
     return;
   }
-  
+
   NSDictionary *jsonObj = [ [NSDictionary alloc]
                            initWithObjectsAndKeys :
                            @YES, @"success",
                            nil
                            ];
-  
+
   CDVPluginResult *pluginResult = [ CDVPluginResult
                                    resultWithStatus    : CDVCommandStatus_OK
                                    messageAsDictionary : jsonObj
                                    ];
-  
+
   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
@@ -90,12 +90,12 @@
                            @YES, @"success",
                            nil
                            ];
-  
+
   CDVPluginResult *pluginResult = [ CDVPluginResult
                                    resultWithStatus    : CDVCommandStatus_OK
                                    messageAsDictionary : jsonObj
                                    ];
-  
+
   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
@@ -114,12 +114,34 @@
                            results, @"contents",
                            nil
                            ];
-  
+
   CDVPluginResult *pluginResult = [ CDVPluginResult
                                    resultWithStatus    : CDVCommandStatus_OK
                                    messageAsDictionary : jsonObj
                                    ];
-  
+
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void) onmsWipe:(CDVInvokedUrlCommand *)command {
+  NSError *error;
+  BOOL success = [[NSFileManager defaultManager] removeItemAtPath:[self getFilePrefix] error:&error];
+  if (!success) {
+    [self returnError:error forCommand:command];
+    return;
+  }
+
+  NSDictionary *jsonObj = [ [NSDictionary alloc]
+                           initWithObjectsAndKeys :
+                           @YES, @"success",
+                           nil
+                           ];
+
+  CDVPluginResult *pluginResult = [ CDVPluginResult
+                                   resultWithStatus    : CDVCommandStatus_OK
+                                   messageAsDictionary : jsonObj
+                                   ];
+
   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
@@ -144,14 +166,14 @@
                             options                : NSDataReadingMappedIfSafe
                             error                  : error
                             ];
-  
+
   return fileContents;
 }
 
 - (BOOL) writeFile:(NSString *)toPath withData:(NSData *)fileData error:(__autoreleasing NSError **)error {
   NSString *fileName = [self getFilePath:toPath];
-  
-  BOOL success = [[NSFileManager defaultManager] createDirectoryAtPath:[fileName stringByDeletingLastPathComponent] 
+
+  BOOL success = [[NSFileManager defaultManager] createDirectoryAtPath:[fileName stringByDeletingLastPathComponent]
     withIntermediateDirectories:YES
     attributes:nil
     error:error];
@@ -180,10 +202,13 @@
   }
 }
 
-- (NSString *) getFilePath:(NSString *)forPath {
+- (NSString *) getFilePrefix {
   NSString *libPath = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES)[0];
+  return [NSString stringWithFormat:@"%@/org.opennms.cordova.storage", libPath];
+}
 
-  return [NSString stringWithFormat:@"%@/%@", libPath, forPath];
+- (NSString *) getFilePath:(NSString *)forPath {
+  return [NSString stringWithFormat:@"%@/%@", [self getFilePrefix], forPath];
 }
 
 - (NSArray *) readDirectory:(NSString *)path error:(__autoreleasing NSError **)error {
@@ -222,7 +247,5 @@
                                    ];
   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
-
-
 
 @end

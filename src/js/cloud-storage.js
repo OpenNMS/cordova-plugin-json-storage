@@ -28,25 +28,33 @@ function assertInitialized() {
 		new LocalBackend()
 	], i, len = attemptedBackends.length, be;
 
-	console.log('attempted backends: ' + JSON.stringify(attemptedBackends));
+	if (debug) {
+		console.log('CloudStorage: Attempting backends: ' + attemptedBackends.map(function(entry){return entry.name;}).join(', '));
+	}
 	for (i=0; i < len; i++) {
 		be = attemptedBackends[i];
 		if (be && be.name) {
-			console.log('CloudStorage: Checking plugin "' + be.name + '".');
+			if (debug) {
+				console.log('CloudStorage: Checking plugin "' + be.name + '".');
+			}
 			if (be.isValid && be.isValid()) {
-				console.log('CloudStorage: Backend "' + be.name + '" is valid.');
+				if (debug) {
+					console.log('CloudStorage: Backend "' + be.name + '" is valid.');
+				}
 				backends[be.name] = be;
 			} else {
 				console.log('CloudStorage: Backend "' + be.name + '" is not valid.');
 			}
 		}
 	}
+	console.log('CloudStorage: Configured backends: ' + Object.keys(backends));
 
 	if (backends.keychain) {
 		defaultBackend = 'keychain';
 	} else {
 		defaultBackend = 'local';
 	}
+	return true;
 }
 
 var getBackend = function(b) {
@@ -59,8 +67,20 @@ var getBackend = function(b) {
 };
 
 var CloudStorage = {
+	'_': {
+		init: assertInitialized,
+		getBackend: function(b) {
+			return backends[b];
+		},
+		getBackends: function() {
+			return backends;
+		}
+	},
 	setDebug: function(d) {
 		debug = !!d;
+	},
+	getDefaultBackend: function() {
+		return defaultBackend;
 	},
 	setDefaultBackend: function(b, success, failure) {
 		assertInitialized();
@@ -98,6 +118,12 @@ var CloudStorage = {
 		var be = getBackend(backend);
 		if (debug) { console.log('CloudStorage: ' + be.name + '.listFiles(' + path + ')'); }
 		be.listFiles(path, success, failure);
+	},
+	wipeData: function(success, failure, backend) {
+		assertInitialized();
+		var be = getBackend(backend);
+		if (debug) { console.log('CloudStorage: ' + be.name + '.wipeData()'); }
+		be.wipeData(success, failure);
 	},
 };
 
@@ -163,6 +189,9 @@ if (typeof angular !== "undefined") {
 			},
 			listFiles: function(path, backend) {
 				return makePromise(CloudStorage.listFiles, [path, backend], false, true);
+			},
+			wipeData: function(backend) {
+				return makePromise(CloudStorage.wipeData, [backend], false, true);
 			},
 		};
 	});

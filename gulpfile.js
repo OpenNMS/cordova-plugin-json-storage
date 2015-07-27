@@ -6,7 +6,7 @@ var jshint     = require('gulp-jshint');
 gulp.task('default', ['lint', 'build']);
 
 gulp.task('lint', function() {
-	gulp.src(['./src/js/**/*.js'])
+	gulp.src(['./src/js/**/*.js', './tests/*.js'])
 		.pipe(jshint())
 		.pipe(jshint.reporter('jshint-stylish'))
 		.pipe(jshint.reporter('fail'));

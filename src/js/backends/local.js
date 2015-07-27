@@ -23,3 +23,6 @@ LocalBackend.prototype.removeFile = function(filename, success, failure) {
 LocalBackend.prototype.listFiles = function(path, success, failure) {
 	exec(success, failure, 'CloudStorage', 'onmsListJsonFiles', [path]);
 };
+LocalBackend.prototype.wipeData = function(success, failure) {
+	exec(success, failure, 'CloudStorage', 'onmsWipe', []);
+};

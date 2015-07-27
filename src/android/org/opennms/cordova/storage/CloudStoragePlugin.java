@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.util.Arrays;
@@ -36,6 +37,8 @@ public class CloudStoragePlugin extends CordovaPlugin {
         } else if ("onmsListJsonFiles".equals(action)) {
             final String path = args.getString(0);
             result = listFiles(path);
+        } else if ("onmsWipe".equals(action)) {
+            result = wipeData();
         }
 
         if (result != null) {
@@ -50,11 +53,6 @@ public class CloudStoragePlugin extends CordovaPlugin {
             callbackContext.error("An unknown error occurred.");
             return false;
         }
-    }
-
-    private File getStorageLocation(final String relativePath) {
-        final File rootDirectory = cordova.getActivity().getFilesDir();
-        return new File(rootDirectory.getAbsolutePath() + File.separator + relativePath);
     }
 
     private CloudStorageResult readJson(final String filePath) {
@@ -135,6 +133,36 @@ public class CloudStoragePlugin extends CordovaPlugin {
             ret.put(entry.getName());
         }
         return new CloudStorageResult(true, ret);
+    }
+
+    private CloudStorageResult wipeData() {
+        final File directory = getStorageRoot();
+        try {
+            final boolean success = deleteRecursive(directory);
+            return new CloudStorageResult(success);
+        } catch (final Exception e) {
+            return new CloudStorageResult(false, "Failed to wipe data.", "Unable to wipe data: " + e.getLocalizedMessage());
+        }
+    }
+
+    private static boolean deleteRecursive(final File path) throws FileNotFoundException {
+        if (!path.exists()) throw new FileNotFoundException(path.getAbsolutePath());
+        boolean ret = true;
+        if (path.isDirectory()) {
+            for (final File f : path.listFiles()) {
+                ret = ret && CloudStoragePlugin.deleteRecursive(f);
+            }
+        }
+        return ret && path.delete();
+    }
+
+    private File getStorageRoot() {
+        final File rootDirectory = cordova.getActivity().getFilesDir();
+        return new File(rootDirectory.getAbsolutePath() + File.separator + "org.opennms.cordova.storage");
+    }
+
+    private File getStorageLocation(final String relativePath) {
+        return new File(getStorageRoot() + File.separator + relativePath);
     }
 
     private static void makeParent(final File file) {

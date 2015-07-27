@@ -14,6 +14,7 @@
 - (void) onmsSetJsonFileContents:(CDVInvokedUrlCommand *)command;
 - (void) onmsRemoveJsonFile:(CDVInvokedUrlCommand *)command;
 - (void) onmsListJsonFiles:(CDVInvokedUrlCommand *)command;
+- (void) onmsWipe:(CDVInvokedUrlCommand *)command;
 
 #pragma mark - Internal
 
