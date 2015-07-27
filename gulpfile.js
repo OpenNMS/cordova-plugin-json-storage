@@ -1,9 +1,9 @@
-var gulp = require('gulp');
-var concat = require('gulp-concat');
+var gulp       = require('gulp');
+var concat     = require('gulp-concat');
 var sourcemaps = require('gulp-sourcemaps');
-var jshint = require('gulp-jshint');
+var jshint     = require('gulp-jshint');
 
-gulp.task('default', ['lint', 'concat']);
+gulp.task('default', ['lint', 'build']);
 
 gulp.task('lint', function() {
 	gulp.src(['./src/js/**/*.js'])
@@ -12,7 +12,7 @@ gulp.task('lint', function() {
 		.pipe(jshint.reporter('fail'));
 });
 
-gulp.task('concat', function() {
+gulp.task('build', function() {
 	gulp.src('./src/js/**/*.js')
 		.pipe(sourcemaps.init())
 		.pipe(concat('cloud-storage.js'))
