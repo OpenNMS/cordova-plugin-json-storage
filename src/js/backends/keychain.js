@@ -197,11 +197,48 @@ function KeychainBackend() {
 		var clear = function(index) {
 			var i, len, entry;
 
+			var pendingTransactions = {};
+
 			var removeItem = function(item) {
 				//console.log('KeychainBackend.wipeData: removing ' + item);
-				kc.removeForKey(function() {}, function err(e) {
+				pendingTransactions[item] = undefined;
+				kc.removeForKey(function() {
+					pendingTransactions[item] = true;
+				}, function err(e) {
 					console.log('KeychainBackend.wipeData: WARNING: unable to remove ' + item + ': ' + e);
+					pendingTransactions[item] = false;
 				}, encodeKey(item), serviceName);
+			};
+
+			var timeoutID;
+			var waitForCompletion = function() {
+				var finished = true,
+					failed = [],
+					keys = Object.keys(pendingTransactions),
+					i, len = keys.length, filename;
+
+				for (i=0; i < len; i++) {
+					filename = keys[i];
+					if (pendingTransactions[filename] === undefined) {
+						finished = false;
+
+					} else if (!pendingTransactions[filename]) {
+						failed.push(filename);
+					}
+				}
+
+				if (timeoutID) {
+					window.clearTimeout(timeoutID);
+				}
+				if (finished) {
+					if (failed.length > 0) {
+						callError(f, 'Failed to remove files: ' + failed.join(', '));
+					} else {
+						callSuccess(s);
+					}
+				} else {
+					window.setTimeout(waitForCompletion, 100);
+				}
 			};
 
 			clearIndex(function clearCallback(success) {
@@ -214,7 +251,7 @@ function KeychainBackend() {
 							removeItem(entry);
 						}
 					}
-					callSuccess(s);
+					waitForCompletion();
 				} else {
 					callError(f);
 				}
