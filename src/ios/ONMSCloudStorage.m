@@ -11,138 +11,148 @@
 @implementation ONMSCloudStorage
 
 - (void) onmsGetJsonFileContents:(CDVInvokedUrlCommand *)command {
-  NSString *filePath = [command.arguments objectAtIndex:0];
+  [self.commandDelegate runInBackground:^{
+    NSString *filePath = [command.arguments objectAtIndex:0];
 
-  NSError *error = nil;
-  NSData *data = [self readFile:filePath error:&error];
+    NSError *error = nil;
+    NSData *data = [self readFile:filePath error:&error];
 
-  if (error) {
-    [self returnError:error forCommand:command];
-    return;
-  }
+    if (error) {
+      [self returnError:error forCommand:command];
+      return;
+    }
 
-  NSDictionary *jsonData = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+    NSDictionary *jsonData = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
 
-  if (error) {
-    [self returnError:error forCommand:command];
-    return;
-  }
+    if (error) {
+      [self returnError:error forCommand:command];
+      return;
+    }
 
-  NSDictionary *jsonObj = [
-                           [NSDictionary alloc]
-                           initWithObjectsAndKeys :
-                           jsonData, @"contents",
-                           @YES, @"success",
-                           nil
-                           ];
+    NSDictionary *jsonObj = [
+                             [NSDictionary alloc]
+                             initWithObjectsAndKeys :
+                             jsonData, @"contents",
+                             @YES, @"success",
+                             nil
+                             ];
 
-  CDVPluginResult *pluginResult = [ CDVPluginResult
-                                   resultWithStatus    : CDVCommandStatus_OK
-                                   messageAsDictionary : jsonObj
-                                   ];
+    CDVPluginResult *pluginResult = [ CDVPluginResult
+                                     resultWithStatus    : CDVCommandStatus_OK
+                                     messageAsDictionary : jsonObj
+                                     ];
 
-  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+  }];
 }
 
 - (void) onmsSetJsonFileContents:(CDVInvokedUrlCommand *)command {
-  NSString *toPath = [command.arguments objectAtIndex:0];
-  NSDictionary *jsonDict = [command.arguments objectAtIndex:1];
-  NSError *error = nil;
-  NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonDict options:kNilOptions error:&error];
+  [self.commandDelegate runInBackground:^{
+    NSString *toPath = [command.arguments objectAtIndex:0];
+    NSDictionary *jsonDict = [command.arguments objectAtIndex:1];
+    NSError *error = nil;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonDict options:kNilOptions error:&error];
 
-  if (error) {
-    [self returnError:error forCommand:command];
-    return;
-  }
+    if (error) {
+      [self returnError:error forCommand:command];
+      return;
+    }
 
-  BOOL written = [self writeFile:toPath withData:jsonData error:&error];
+    BOOL written = [self writeFile:toPath withData:jsonData error:&error];
 
-  if (!written) {
-    [self returnError:error forCommand:command];
-    return;
-  }
+    if (!written) {
+      [self returnError:error forCommand:command];
+      return;
+    }
 
-  NSDictionary *jsonObj = [ [NSDictionary alloc]
-                           initWithObjectsAndKeys :
-                           @YES, @"success",
-                           nil
-                           ];
+    NSDictionary *jsonObj = [ [NSDictionary alloc]
+                             initWithObjectsAndKeys :
+                             @YES, @"success",
+                             nil
+                             ];
 
-  CDVPluginResult *pluginResult = [ CDVPluginResult
-                                   resultWithStatus    : CDVCommandStatus_OK
-                                   messageAsDictionary : jsonObj
-                                   ];
+    CDVPluginResult *pluginResult = [ CDVPluginResult
+                                     resultWithStatus    : CDVCommandStatus_OK
+                                     messageAsDictionary : jsonObj
+                                     ];
 
-  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+  }];
 }
 
 - (void) onmsRemoveJsonFile:(CDVInvokedUrlCommand *)command {
-  NSString *path = [command.arguments objectAtIndex:0];
-  NSError *error;
-  BOOL success = [self removeFile:path error:&error];
-  if (!success) {
-    [self returnError:error forCommand:command];
-    return;
-  }
+  [self.commandDelegate runInBackground:^{
+    NSString *path = [command.arguments objectAtIndex:0];
+    NSError *error;
+    BOOL success = [self removeFile:path error:&error];
+    if (!success) {
+      [self returnError:error forCommand:command];
+      return;
+    }
 
-  NSDictionary *jsonObj = [ [NSDictionary alloc]
-                           initWithObjectsAndKeys :
-                           @YES, @"success",
-                           nil
-                           ];
+    NSDictionary *jsonObj = [ [NSDictionary alloc]
+                             initWithObjectsAndKeys :
+                             @YES, @"success",
+                             nil
+                             ];
 
-  CDVPluginResult *pluginResult = [ CDVPluginResult
-                                   resultWithStatus    : CDVCommandStatus_OK
-                                   messageAsDictionary : jsonObj
-                                   ];
+    CDVPluginResult *pluginResult = [ CDVPluginResult
+                                     resultWithStatus    : CDVCommandStatus_OK
+                                     messageAsDictionary : jsonObj
+                                     ];
 
-  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+  }];
 }
 
 - (void) onmsListJsonFiles:(CDVInvokedUrlCommand *)command {
-  NSString *path = [command.arguments objectAtIndex:0];
-  NSError *error;
-  NSArray *results = [self readDirectory:path error:&error];
-  if (error) {
-    [self returnError:error forCommand:command];
-    return;
-  }
+  [self.commandDelegate runInBackground:^{
+    NSString *path = [command.arguments objectAtIndex:0];
+    NSError *error;
+    NSArray *results = [self readDirectory:path error:&error];
+    if (error) {
+      [self returnError:error forCommand:command];
+      return;
+    }
 
-  NSDictionary *jsonObj = [ [NSDictionary alloc]
-                           initWithObjectsAndKeys :
-                           @YES, @"success",
-                           results, @"contents",
-                           nil
-                           ];
+    NSDictionary *jsonObj = [ [NSDictionary alloc]
+                             initWithObjectsAndKeys :
+                             @YES, @"success",
+                             results, @"contents",
+                             nil
+                             ];
 
-  CDVPluginResult *pluginResult = [ CDVPluginResult
-                                   resultWithStatus    : CDVCommandStatus_OK
-                                   messageAsDictionary : jsonObj
-                                   ];
+    CDVPluginResult *pluginResult = [ CDVPluginResult
+                                     resultWithStatus    : CDVCommandStatus_OK
+                                     messageAsDictionary : jsonObj
+                                     ];
 
-  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+  }];
 }
 
 - (void) onmsWipe:(CDVInvokedUrlCommand *)command {
-  NSError *error;
-  BOOL success = [[NSFileManager defaultManager] removeItemAtPath:[self getFilePrefix] error:&error];
-  if (!success) {
-    [self returnError:error forCommand:command];
-    return;
-  }
+  [self.commandDelegate runInBackground:^{
+    NSError *error;
+    BOOL success = [[NSFileManager defaultManager] removeItemAtPath:[self getFilePrefix] error:&error];
+    if (!success) {
+      [self returnError:error forCommand:command];
+      return;
+    }
 
-  NSDictionary *jsonObj = [ [NSDictionary alloc]
-                           initWithObjectsAndKeys :
-                           @YES, @"success",
-                           nil
-                           ];
+    NSDictionary *jsonObj = [ [NSDictionary alloc]
+                             initWithObjectsAndKeys :
+                             @YES, @"success",
+                             nil
+                             ];
 
-  CDVPluginResult *pluginResult = [ CDVPluginResult
-                                   resultWithStatus    : CDVCommandStatus_OK
-                                   messageAsDictionary : jsonObj
-                                   ];
+    CDVPluginResult *pluginResult = [ CDVPluginResult
+                                     resultWithStatus    : CDVCommandStatus_OK
+                                     messageAsDictionary : jsonObj
+                                     ];
 
-  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+  }];
 }
 
 #pragma mark - Internal
