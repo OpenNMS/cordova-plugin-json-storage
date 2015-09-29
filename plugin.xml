@@ -18,6 +18,10 @@
 
     <dependency id="com.shazron.cordova.plugin.keychainutil" url="https://github.com/shazron/KeychainPlugin.git" />
 
+    <!-- browser -->
+    <platform name="browser">
+    </platform>
+
     <!-- ios -->
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
