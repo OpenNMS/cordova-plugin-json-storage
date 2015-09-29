@@ -12,7 +12,7 @@ exports.defineAutoTests = function() {
 	});
 
 	//var backends = [];
-	var backends = ['local'];
+	var backends = ['local', 'memory'];
 
 	if (navigator.userAgent.indexOf('Android') > 0) {
 		// android-only tests

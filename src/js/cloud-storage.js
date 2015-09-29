@@ -11,6 +11,7 @@
 
 /* global KeychainBackend */
 /* global LocalBackend */
+/* global MemoryBackend */
 
 var debug = false;
 var backends = {};
@@ -25,7 +26,8 @@ function assertInitialized() {
 
 	var attemptedBackends = [
 		new KeychainBackend(),
-		new LocalBackend()
+		new LocalBackend(),
+		new MemoryBackend()
 	], i, len = attemptedBackends.length, be;
 
 	if (debug) {
