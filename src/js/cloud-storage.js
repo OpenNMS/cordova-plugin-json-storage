@@ -89,12 +89,16 @@ var CloudStorage = {
 		if (backends[b]) {
 			if (debug) { console.log('CloudStorage: setting backend to ' + b); }
 			defaultBackend = b;
-			success(b);
+			if (success) {
+				success(b);
+			}
 		} else {
 			var error = 'Unknown backend "' + b + '"';
 			console.log('CloudStorage: WARNING: ' + error);
 			console.log('CloudStorage: available backends: ' + Object.keys(backends).join(', '));
-			failure(error);
+			if (failure) {
+				failure(error);
+			}
 		}
 	},
 	readFile: function(filename, success, failure, backend) {
