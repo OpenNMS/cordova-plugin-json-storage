@@ -2,12 +2,12 @@ exports.defineAutoTests = function() {
 	'use strict';
 
 	beforeEach(function() {
-		window.plugins.CloudStorage._.init();
+		window.plugins.JSONStorage._.init();
 	});
 
-	describe('CloudStorage API', function() {
+	describe('JSONStorage API', function() {
 		it('should be defined', function() {
-			expect(window.plugins.CloudStorage).toBeDefined();
+			expect(window.plugins.JSONStorage).toBeDefined();
 		});
 	});
 
@@ -25,7 +25,7 @@ exports.defineAutoTests = function() {
 	var testBackend = function(backend) {
 		describe('backend: ' + backend, function() {
 			it('should wipe everything', function(done) {
-				window.plugins.CloudStorage.wipeData(
+				window.plugins.JSONStorage.wipeData(
 					function success(s) {
 						expect(s).toBeDefined();
 						expect(s.success).toBe(true);
@@ -38,7 +38,7 @@ exports.defineAutoTests = function() {
 				);
 			});
 			it('should not find a file', function(done) {
-				window.plugins.CloudStorage.readFile(
+				window.plugins.JSONStorage.readFile(
 					'foo/test.json',
 					function success(s) {
 						console.log('success should not happen: ' + JSON.stringify(s));
@@ -53,7 +53,7 @@ exports.defineAutoTests = function() {
 				);
 			});
 			it('should error when there is no directory to list', function(done) {
-				window.plugins.CloudStorage.listFiles(
+				window.plugins.JSONStorage.listFiles(
 					'foo',
 					function success(s) {
 						console.log('success should not happen: ' + JSON.stringify(s));
@@ -68,7 +68,7 @@ exports.defineAutoTests = function() {
 				);
 			});
 			it('should write a test.json to the foo directory', function(done) {
-				window.plugins.CloudStorage.writeFile(
+				window.plugins.JSONStorage.writeFile(
 					'foo/test.json',
 					{boo:'yah'},
 					function success(s) {
@@ -83,7 +83,7 @@ exports.defineAutoTests = function() {
 				);
 			});
 			it('should list one file', function(done) {
-				window.plugins.CloudStorage.listFiles(
+				window.plugins.JSONStorage.listFiles(
 					'foo',
 					function success(s) {
 						expect(s).toBeDefined();
@@ -99,7 +99,7 @@ exports.defineAutoTests = function() {
 				);
 			});
 			it('should retrieve the contents of the file', function(done) {
-				window.plugins.CloudStorage.readFile(
+				window.plugins.JSONStorage.readFile(
 					'foo/test.json',
 					function success(s) {
 						expect(s).toBeDefined();

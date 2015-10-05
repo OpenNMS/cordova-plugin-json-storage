@@ -1,1 +1,1 @@
-Cordova Cloud Storage Plugin
+Cordova JSON Storage Plugin

@@ -1,14 +1,14 @@
 //
-//  ONMSCloudStorage.m
-//  Cordova Cloud Storage Plugin
+//  ONMSJSONStorage.m
+//  Cordova JSON Storage Plugin
 //
 //  Created by Benjamin Reed on 7/20/15.
 //
 //
 
-#import "ONMSCloudStorage.h"
+#import "ONMSJSONStorage.h"
 
-@implementation ONMSCloudStorage
+@implementation ONMSJSONStorage
 
 - (void) onmsGetJsonFileContents:(CDVInvokedUrlCommand *)command {
   [self.commandDelegate runInBackground:^{

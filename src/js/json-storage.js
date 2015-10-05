@@ -22,7 +22,7 @@ function assertInitialized() {
 	if (_initialized) { return; }
 	_initialized = true;
 
-	console.log('CloudStorage: Initializing.');
+	console.log('JSONStorage: Initializing.');
 
 	var attemptedBackends = [
 		new KeychainBackend(),
@@ -31,25 +31,25 @@ function assertInitialized() {
 	], i, len = attemptedBackends.length, be;
 
 	if (debug) {
-		console.log('CloudStorage: Attempting backends: ' + attemptedBackends.map(function(entry){return entry.name;}).join(', '));
+		console.log('JSONStorage: Attempting backends: ' + attemptedBackends.map(function(entry){return entry.name;}).join(', '));
 	}
 	for (i=0; i < len; i++) {
 		be = attemptedBackends[i];
 		if (be && be.name) {
 			if (debug) {
-				console.log('CloudStorage: Checking plugin "' + be.name + '".');
+				console.log('JSONStorage: Checking plugin "' + be.name + '".');
 			}
 			if (be.isValid && be.isValid()) {
 				if (debug) {
-					console.log('CloudStorage: Backend "' + be.name + '" is valid.');
+					console.log('JSONStorage: Backend "' + be.name + '" is valid.');
 				}
 				backends[be.name] = be;
 			} else {
-				console.log('CloudStorage: Backend "' + be.name + '" is not valid.');
+				console.log('JSONStorage: Backend "' + be.name + '" is not valid.');
 			}
 		}
 	}
-	console.log('CloudStorage: Configured backends: ' + Object.keys(backends));
+	console.log('JSONStorage: Configured backends: ' + Object.keys(backends));
 
 	if (backends.keychain) {
 		defaultBackend = 'keychain';
@@ -63,12 +63,12 @@ var getBackend = function(b) {
 	if (backends[b]) {
 		return backends[b];
 	} else if (b !== undefined) {
-		console.log('CloudStorage: Unknown backend "' + b + '": falling back to default ("' + defaultBackend + '")');
+		console.log('JSONStorage: Unknown backend "' + b + '": falling back to default ("' + defaultBackend + '")');
 	}
 	return backends[defaultBackend];
 };
 
-var CloudStorage = {
+var JSONStorage = {
 	'_': {
 		init: assertInitialized,
 		getBackend: function(b) {
@@ -87,15 +87,15 @@ var CloudStorage = {
 	setDefaultBackend: function(b, success, failure) {
 		assertInitialized();
 		if (backends[b]) {
-			if (debug) { console.log('CloudStorage: setting backend to ' + b); }
+			if (debug) { console.log('JSONStorage: setting backend to ' + b); }
 			defaultBackend = b;
 			if (success) {
 				success(b);
 			}
 		} else {
 			var error = 'Unknown backend "' + b + '"';
-			console.log('CloudStorage: WARNING: ' + error);
-			console.log('CloudStorage: available backends: ' + Object.keys(backends).join(', '));
+			console.log('JSONStorage: WARNING: ' + error);
+			console.log('JSONStorage: available backends: ' + Object.keys(backends).join(', '));
 			if (failure) {
 				failure(error);
 			}
@@ -104,43 +104,43 @@ var CloudStorage = {
 	readFile: function(filename, success, failure, backend) {
 		assertInitialized();
 		var be = getBackend(backend);
-		if (debug) { console.log('CloudStorage: ' + be.name + '.readFile(' + filename + ')'); }
+		if (debug) { console.log('JSONStorage: ' + be.name + '.readFile(' + filename + ')'); }
 		be.readFile(filename, success, failure);
 	},
 	writeFile: function(filename, data, success, failure, backend) {
 		assertInitialized();
 		var be = getBackend(backend);
-		if (debug) { console.log('CloudStorage: ' + be.name + '.writeFile(' + filename + ', ...)'); }
+		if (debug) { console.log('JSONStorage: ' + be.name + '.writeFile(' + filename + ', ...)'); }
 		be.writeFile(filename, data, success, failure);
 	},
 	removeFile: function(filename, success, failure, backend) {
 		assertInitialized();
 		var be = getBackend(backend);
-		if (debug) { console.log('CloudStorage: ' + be.name + '.removeFile(' + filename + ')'); }
+		if (debug) { console.log('JSONStorage: ' + be.name + '.removeFile(' + filename + ')'); }
 		be.removeFile(filename, success, failure);
 	},
 	listFiles: function(path, success, failure, backend) {
 		assertInitialized();
 		var be = getBackend(backend);
-		if (debug) { console.log('CloudStorage: ' + be.name + '.listFiles(' + path + ')'); }
+		if (debug) { console.log('JSONStorage: ' + be.name + '.listFiles(' + path + ')'); }
 		be.listFiles(path, success, failure);
 	},
 	wipeData: function(success, failure, backend) {
 		assertInitialized();
 		var be = getBackend(backend);
-		if (debug) { console.log('CloudStorage: ' + be.name + '.wipeData()'); }
+		if (debug) { console.log('JSONStorage: ' + be.name + '.wipeData()'); }
 		be.wipeData(success, failure);
 	},
 };
 
 if (typeof angular !== "undefined") {
-	console.log('CloudStorage: Angular is available.  Registering Angular module.');
-	angular.module('CloudStorage', []).factory('CloudStorage', function($timeout, $q) {
+	console.log('JSONStorage: Angular is available.  Registering Angular module.');
+	angular.module('JSONStorage', []).factory('JSONStorage', function($timeout, $q) {
 		function makePromise(fn, args, async, hasBackend) {
 			var deferred = $q.defer();
 
 			var success = function(response) {
-				if (debug) { console.log('CloudStorage: success: ' + angular.toJson(response)); }
+				if (debug) { console.log('JSONStorage: success: ' + angular.toJson(response)); }
 				if (async) {
 					$timeout(function() {
 						deferred.resolve(response);
@@ -151,7 +151,7 @@ if (typeof angular !== "undefined") {
 			};
 
 			var fail = function(response) {
-				if (debug) { console.log('CloudStorage: failure: ' + angular.toJson(response)); }
+				if (debug) { console.log('JSONStorage: failure: ' + angular.toJson(response)); }
 				if (async) {
 					$timeout(function() {
 						deferred.reject(response);
@@ -172,44 +172,44 @@ if (typeof angular !== "undefined") {
 				args.push(backend);
 			}
 
-			fn.apply(CloudStorage, args);
+			fn.apply(JSONStorage, args);
 
 			return deferred.promise;
 		}
 
 		return {
 			setDebug: function(debug) {
-				return CloudStorage.setDebug(debug);
+				return JSONStorage.setDebug(debug);
 			},
 			setDefaultBackend: function(backend) {
-				return makePromise(CloudStorage.setDefaultBackend, [backend]);
+				return makePromise(JSONStorage.setDefaultBackend, [backend]);
 			},
 			readFile: function(filename, backend) {
-				return makePromise(CloudStorage.readFile, [filename, backend], false, true);
+				return makePromise(JSONStorage.readFile, [filename, backend], false, true);
 			},
 			writeFile: function(filename, data, backend) {
-				return makePromise(CloudStorage.writeFile, [filename, data, backend], false, true);
+				return makePromise(JSONStorage.writeFile, [filename, data, backend], false, true);
 			},
 			removeFile: function(filename, backend) {
-				return makePromise(CloudStorage.removeFile, [filename, backend], false, true);
+				return makePromise(JSONStorage.removeFile, [filename, backend], false, true);
 			},
 			listFiles: function(path, backend) {
-				return makePromise(CloudStorage.listFiles, [path, backend], false, true);
+				return makePromise(JSONStorage.listFiles, [path, backend], false, true);
 			},
 			wipeData: function(backend) {
-				return makePromise(CloudStorage.wipeData, [backend], false, true);
+				return makePromise(JSONStorage.wipeData, [backend], false, true);
 			},
 		};
 	});
 } else {
-	console.log('CloudStorage: Angular is not available.  Skipping Angular support.');
+	console.log('JSONStorage: Angular is not available.  Skipping Angular support.');
 }
 
-module.exports = CloudStorage;
+module.exports = JSONStorage;
 
 if (!window.plugins) {
 	window.plugins = {};
 }
-if (!window.plugins.CloudStorage) {
-	window.plugins.CloudStorage = CloudStorage;
+if (!window.plugins.JSONStorage) {
+	window.plugins.JSONStorage = JSONStorage;
 }

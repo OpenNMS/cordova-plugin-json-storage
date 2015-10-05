@@ -12,17 +12,17 @@ LocalBackend.prototype.isValid = function() {
 	return true;
 };
 LocalBackend.prototype.readFile = function(filename, success, failure) {
-	exec(success, failure, 'CloudStorage', 'onmsGetJsonFileContents', [filename]);
+	exec(success, failure, 'JSONStorage', 'onmsGetJsonFileContents', [filename]);
 };
 LocalBackend.prototype.writeFile = function(filename, data, success, failure) {
-	exec(success, failure, 'CloudStorage', 'onmsSetJsonFileContents', [filename, data]);
+	exec(success, failure, 'JSONStorage', 'onmsSetJsonFileContents', [filename, data]);
 };
 LocalBackend.prototype.removeFile = function(filename, success, failure) {
-	exec(success, failure, 'CloudStorage', 'onmsRemoveJsonFile', [filename]);
+	exec(success, failure, 'JSONStorage', 'onmsRemoveJsonFile', [filename]);
 };
 LocalBackend.prototype.listFiles = function(path, success, failure) {
-	exec(success, failure, 'CloudStorage', 'onmsListJsonFiles', [path]);
+	exec(success, failure, 'JSONStorage', 'onmsListJsonFiles', [path]);
 };
 LocalBackend.prototype.wipeData = function(success, failure) {
-	exec(success, failure, 'CloudStorage', 'onmsWipe', []);
+	exec(success, failure, 'JSONStorage', 'onmsWipe', []);
 };

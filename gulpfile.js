@@ -15,7 +15,7 @@ gulp.task('lint', function() {
 gulp.task('build', function() {
 	gulp.src('./src/js/**/*.js')
 		.pipe(sourcemaps.init())
-		.pipe(concat('cloud-storage.js'))
+		.pipe(concat('json-storage.js'))
 		.pipe(sourcemaps.write())
 		.pipe(gulp.dest('./www/'));
 });

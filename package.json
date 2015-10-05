@@ -1,7 +1,7 @@
 {
   "name": "cordova-plugin-storage",
   "version": "0.1.0",
-  "description": "Cordova Cloud Storage Plugin",
+  "description": "Cordova JSON Storage Plugin",
   "repository": {
     "type": "git",
     "url": "http://github.com/OpenNMS/cordova-plugin-storage.git"

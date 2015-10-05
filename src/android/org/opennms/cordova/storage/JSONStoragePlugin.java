@@ -18,12 +18,12 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
-public class CloudStoragePlugin extends CordovaPlugin {
-    private static final String TAG = "CloudStoragePlugin";
+public class JSONStoragePlugin extends CordovaPlugin {
+    private static final String TAG = "JSONStoragePlugin";
 
     @Override
     public boolean execute(final String action, final CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
-        CloudStorageResult result = null;
+        JSONStorageResult result = null;
         if ("onmsGetJsonFileContents".equals(action)) {
             final String filename = args.getString(0);
             result = readJson(filename);
@@ -55,11 +55,11 @@ public class CloudStoragePlugin extends CordovaPlugin {
         }
     }
 
-    private CloudStorageResult readJson(final String filePath) {
+    private JSONStorageResult readJson(final String filePath) {
         final File inputFile = getStorageLocation(filePath);
         Log.d(TAG, "Reading: " + inputFile);
         if (!inputFile.exists() || !inputFile.canRead()) {
-            return new CloudStorageResult(false, "Unable to read file.", filePath + " does not exist or is not readable.");
+            return new JSONStorageResult(false, "Unable to read file.", filePath + " does not exist or is not readable.");
         }
 
         FileInputStream fis = null;
@@ -75,9 +75,9 @@ public class CloudStoragePlugin extends CordovaPlugin {
                 sb.append(line).append("\n");
             }
             final JSONObject obj = new JSONObject(sb.toString());
-            return new CloudStorageResult(true, obj);
+            return new JSONStorageResult(true, obj);
         } catch (final Exception e) {
-            return new CloudStorageResult(false, "Unable to read file.", "Failed to read " + filePath + ": " + e.getLocalizedMessage());
+            return new JSONStorageResult(false, "Unable to read file.", "Failed to read " + filePath + ": " + e.getLocalizedMessage());
         } finally {
             closeQuietly(br);
             closeQuietly(isr);
@@ -85,7 +85,7 @@ public class CloudStoragePlugin extends CordovaPlugin {
         }
     }
 
-    private CloudStorageResult writeJson(final String filePath, final JSONObject contents) {
+    private JSONStorageResult writeJson(final String filePath, final JSONObject contents) {
         final File outputFile = getStorageLocation(filePath);
         Log.d(TAG, "Writing: " + outputFile);
         makeParent(outputFile);
@@ -94,37 +94,37 @@ public class CloudStoragePlugin extends CordovaPlugin {
         try {
             jsonString = contents.toString(4);
         } catch (final JSONException e) {
-            return new CloudStorageResult(false, "Failed to serialize JSON.", e.getLocalizedMessage());
+            return new JSONStorageResult(false, "Failed to serialize JSON.", e.getLocalizedMessage());
         }
 
         FileWriter fw = null;
         try {
             fw = new FileWriter(outputFile);
             fw.write(jsonString);
-            return new CloudStorageResult(true);
+            return new JSONStorageResult(true);
         } catch (final Exception e) {
-            return new CloudStorageResult(false, "Failed to write JSON.", "Failed to write " + filePath + ": " + e.getLocalizedMessage());
+            return new JSONStorageResult(false, "Failed to write JSON.", "Failed to write " + filePath + ": " + e.getLocalizedMessage());
         } finally {
             closeQuietly(fw);
         }
     }
 
-    private CloudStorageResult removeJsonFile(final String filePath) {
+    private JSONStorageResult removeJsonFile(final String filePath) {
         final File removedFile = getStorageLocation(filePath);
         Log.d(TAG,  "Removing: " + removedFile);
         if (!removedFile.exists()) {
-            return new CloudStorageResult(true);
+            return new JSONStorageResult(true);
         }
-        return new CloudStorageResult(removedFile.delete());
+        return new JSONStorageResult(removedFile.delete());
     }
 
-    private CloudStorageResult listFiles(final String path) {
+    private JSONStorageResult listFiles(final String path) {
         final File directory = getStorageLocation(path);
         final String root = getStorageLocation("").getAbsolutePath();
         Log.d(TAG, "root directory = " + root);
 
         if (!directory.exists()) {
-            return new CloudStorageResult(false, "Directory missing.", "Directory '" + path + "' does not exist.");
+            return new JSONStorageResult(false, "Directory missing.", "Directory '" + path + "' does not exist.");
         }
         final File[] entries = directory.listFiles();
         Arrays.sort(entries);
@@ -132,16 +132,16 @@ public class CloudStoragePlugin extends CordovaPlugin {
         for (final File entry : entries) {
             ret.put(entry.getName());
         }
-        return new CloudStorageResult(true, ret);
+        return new JSONStorageResult(true, ret);
     }
 
-    private CloudStorageResult wipeData() {
+    private JSONStorageResult wipeData() {
         final File directory = getStorageRoot();
         try {
             final boolean success = deleteRecursive(directory);
-            return new CloudStorageResult(success);
+            return new JSONStorageResult(success);
         } catch (final Exception e) {
-            return new CloudStorageResult(false, "Failed to wipe data.", "Unable to wipe data: " + e.getLocalizedMessage());
+            return new JSONStorageResult(false, "Failed to wipe data.", "Unable to wipe data: " + e.getLocalizedMessage());
         }
     }
 
@@ -150,7 +150,7 @@ public class CloudStoragePlugin extends CordovaPlugin {
         boolean ret = true;
         if (path.isDirectory()) {
             for (final File f : path.listFiles()) {
-                ret = ret && CloudStoragePlugin.deleteRecursive(f);
+                ret = ret && JSONStoragePlugin.deleteRecursive(f);
             }
         }
         return ret && path.delete();

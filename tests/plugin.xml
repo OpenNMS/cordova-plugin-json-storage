@@ -3,7 +3,7 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	id="org.opennms.cordova.storage.tests"
 	version="0.1.0-dev">
-	<name>Cordova Cloud Storage Tests</name>
+	<name>Cordova JSON Storage Tests</name>
 	<license>Apache 2.0</license>
 
 	<js-module src="tests.js" name="tests"></js-module>

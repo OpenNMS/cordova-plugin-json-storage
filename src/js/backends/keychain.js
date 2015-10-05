@@ -21,7 +21,7 @@ if (typeof String.prototype.endsWith !== 'function') {
 
 function KeychainBackend() {
 	var kc = new Keychain();
-	var serviceName = 'CordovaCloudStorage';
+	var serviceName = 'CordovaJSONStorage';
 
 	var encodeKey = function(str) {
 		return window.btoa(str);
