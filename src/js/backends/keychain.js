@@ -6,7 +6,7 @@
 /* global require */
 /* global window */
 
-var CordovaKeychain = require('cordova-plugin-keychain');
+var CordovaKeychain = require('cordova-plugin-keychain.CordovaKeychain');
 
 if (typeof String.prototype.startsWith !== 'function') {
 	String.prototype.startsWith = function(str) {
