@@ -214,7 +214,7 @@
 
 - (NSString *) getFilePrefix {
   NSString *libPath = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES)[0];
-  return [NSString stringWithFormat:@"%@/org.opennms.cordova.storage", libPath];
+  return [NSString stringWithFormat:@"%@/cordova-plugin-storage", libPath];
 }
 
 - (NSString *) getFilePath:(NSString *)forPath {

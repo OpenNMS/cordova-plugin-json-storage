@@ -158,7 +158,7 @@ public class JSONStoragePlugin extends CordovaPlugin {
 
     private File getStorageRoot() {
         final File rootDirectory = cordova.getActivity().getFilesDir();
-        return new File(rootDirectory.getAbsolutePath() + File.separator + "org.opennms.cordova.storage");
+        return new File(rootDirectory.getAbsolutePath() + File.separator + "cordova-plugin-storage");
     }
 
     private File getStorageLocation(final String relativePath) {
