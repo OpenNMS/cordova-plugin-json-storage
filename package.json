@@ -1,7 +1,14 @@
 {
   "name": "cordova-plugin-storage",
-  "version": "0.1.0",
+  "version": "0.1.0-dev",
   "description": "Cordova JSON Storage Plugin",
+  "cordova": {
+    "id": "cordova-plugin-keychain",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "http://github.com/OpenNMS/cordova-plugin-storage.git"
@@ -13,5 +20,11 @@
     "jshint": "*",
     "jshint-stylish": "*"
   },
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.0.0"
+    }
+  ],
   "license": "MIT"
 }
