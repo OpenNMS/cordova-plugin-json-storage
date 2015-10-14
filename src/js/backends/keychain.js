@@ -6,7 +6,7 @@
 /* global require */
 /* global window */
 
-var Keychain = require('com.shazron.cordova.plugin.keychainutil.Keychain');
+var Keychain = require('com.raccoonfink.cordova.plugins.keychain');
 
 if (typeof String.prototype.startsWith !== 'function') {
 	String.prototype.startsWith = function(str) {

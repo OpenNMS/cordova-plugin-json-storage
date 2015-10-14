@@ -16,7 +16,7 @@
         <clobbers target="window.plugins.JSONStorage" />
     </js-module>
 
-    <dependency id="com.shazron.cordova.plugin.keychainutil" url="https://github.com/shazron/KeychainPlugin.git" />
+    <dependency id="com.raccoonfink.cordova.plugin.keychainutil" url="https://github.com/RangerRick/KeychainPlugin.git" />
 
     <!-- browser -->
     <platform name="browser">
