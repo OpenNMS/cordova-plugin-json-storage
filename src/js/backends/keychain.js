@@ -6,7 +6,7 @@
 /* global require */
 /* global window */
 
-var Keychain = require('com.raccoonfink.cordova.plugins.keychain');
+var CordovaKeychain = require('cordova-plugin-keychain');
 
 if (typeof String.prototype.startsWith !== 'function') {
 	String.prototype.startsWith = function(str) {
@@ -20,7 +20,7 @@ if (typeof String.prototype.endsWith !== 'function') {
 }
 
 function KeychainBackend() {
-	var kc = new Keychain();
+	var kc = new CordovaKeychain();
 	var serviceName = 'CordovaJSONStorage';
 
 	var encodeKey = function(str) {
