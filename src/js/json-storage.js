@@ -9,13 +9,16 @@
 /* global require */
 /* global window */
 
+/* global DropboxBackend */
 /* global KeychainBackend */
 /* global LocalBackend */
 /* global MemoryBackend */
 
-var debug = false;
 var backends = {};
 var defaultBackend;
+var options = {
+	debug: false,
+};
 
 var _initialized = false;
 function assertInitialized() {
@@ -25,22 +28,23 @@ function assertInitialized() {
 	console.log('JSONStorage: Initializing.');
 
 	var attemptedBackends = [
+		new DropboxBackend(),
 		new KeychainBackend(),
 		new LocalBackend(),
 		new MemoryBackend()
 	], i, len = attemptedBackends.length, be;
 
-	if (debug) {
+	if (options.debug) {
 		console.log('JSONStorage: Attempting backends: ' + attemptedBackends.map(function(entry){return entry.name;}).join(', '));
 	}
 	for (i=0; i < len; i++) {
 		be = attemptedBackends[i];
 		if (be && be.name) {
-			if (debug) {
+			if (options.debug) {
 				console.log('JSONStorage: Checking plugin "' + be.name + '".');
 			}
 			if (be.isValid && be.isValid()) {
-				if (debug) {
+				if (options.debug) {
 					console.log('JSONStorage: Backend "' + be.name + '" is valid.');
 				}
 				backends[be.name] = be;
@@ -69,6 +73,7 @@ var getBackend = function(b) {
 };
 
 var JSONStorage = {
+	/* only for testing, do not use */
 	'_': {
 		init: assertInitialized,
 		getBackend: function(b) {
@@ -79,7 +84,7 @@ var JSONStorage = {
 		}
 	},
 	setDebug: function(d) {
-		debug = !!d;
+		options.debug = !!d;
 	},
 	getDefaultBackend: function() {
 		return defaultBackend;
@@ -87,7 +92,7 @@ var JSONStorage = {
 	setDefaultBackend: function(b, success, failure) {
 		assertInitialized();
 		if (backends[b]) {
-			if (debug) { console.log('JSONStorage: setting backend to ' + b); }
+			if (options.debug) { console.log('JSONStorage: setting backend to ' + b); }
 			defaultBackend = b;
 			if (success) {
 				success(b);
@@ -104,31 +109,31 @@ var JSONStorage = {
 	readFile: function(filename, success, failure, backend) {
 		assertInitialized();
 		var be = getBackend(backend);
-		if (debug) { console.log('JSONStorage: ' + be.name + '.readFile(' + filename + ')'); }
+		if (options.debug) { console.log('JSONStorage: ' + be.name + '.readFile(' + filename + ')'); }
 		be.readFile(filename, success, failure);
 	},
 	writeFile: function(filename, data, success, failure, backend) {
 		assertInitialized();
 		var be = getBackend(backend);
-		if (debug) { console.log('JSONStorage: ' + be.name + '.writeFile(' + filename + ', ...)'); }
+		if (options.debug) { console.log('JSONStorage: ' + be.name + '.writeFile(' + filename + ', ...)'); }
 		be.writeFile(filename, data, success, failure);
 	},
 	removeFile: function(filename, success, failure, backend) {
 		assertInitialized();
 		var be = getBackend(backend);
-		if (debug) { console.log('JSONStorage: ' + be.name + '.removeFile(' + filename + ')'); }
+		if (options.debug) { console.log('JSONStorage: ' + be.name + '.removeFile(' + filename + ')'); }
 		be.removeFile(filename, success, failure);
 	},
 	listFiles: function(path, success, failure, backend) {
 		assertInitialized();
 		var be = getBackend(backend);
-		if (debug) { console.log('JSONStorage: ' + be.name + '.listFiles(' + path + ')'); }
+		if (options.debug) { console.log('JSONStorage: ' + be.name + '.listFiles(' + path + ')'); }
 		be.listFiles(path, success, failure);
 	},
 	wipeData: function(success, failure, backend) {
 		assertInitialized();
 		var be = getBackend(backend);
-		if (debug) { console.log('JSONStorage: ' + be.name + '.wipeData()'); }
+		if (options.debug) { console.log('JSONStorage: ' + be.name + '.wipeData()'); }
 		be.wipeData(success, failure);
 	},
 };
@@ -140,7 +145,7 @@ if (typeof angular !== "undefined") {
 			var deferred = $q.defer();
 
 			var success = function(response) {
-				if (debug) { console.log('JSONStorage: success: ' + angular.toJson(response)); }
+				if (options.debug) { console.log('JSONStorage: success: ' + angular.toJson(response)); }
 				if (async) {
 					$timeout(function() {
 						deferred.resolve(response);
@@ -151,7 +156,7 @@ if (typeof angular !== "undefined") {
 			};
 
 			var fail = function(response) {
-				if (debug) { console.log('JSONStorage: failure: ' + angular.toJson(response)); }
+				if (options.debug) { console.log('JSONStorage: failure: ' + angular.toJson(response)); }
 				if (async) {
 					$timeout(function() {
 						deferred.reject(response);

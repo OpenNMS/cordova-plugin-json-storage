@@ -214,7 +214,7 @@
 
 - (NSString *) getFilePrefix {
   NSString *libPath = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES)[0];
-  return [NSString stringWithFormat:@"%@/cordova-plugin-storage", libPath];
+  return [NSString stringWithFormat:@"%@/cordova-plugin-json-storage", libPath];
 }
 
 - (NSString *) getFilePath:(NSString *)forPath {

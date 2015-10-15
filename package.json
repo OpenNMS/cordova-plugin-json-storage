@@ -1,5 +1,5 @@
 {
-  "name": "cordova-plugin-storage",
+  "name": "cordova-plugin-json-storage",
   "version": "0.1.0-dev",
   "description": "Cordova JSON Storage Plugin",
   "cordova": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/OpenNMS/cordova-plugin-storage.git"
+    "url": "http://github.com/OpenNMS/cordova-plugin-json-storage.git"
   },
   "devDependencies": {
     "gulp-concat": "*",

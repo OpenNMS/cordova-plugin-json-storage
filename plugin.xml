@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
   xmlns:android="http://schemas.android.com/apk/res/android"
-  id="cordova-plugin-storage"
+  id="cordova-plugin-json-storage"
   version="0.1.0-dev">
 
     <name>Cordova JSON Storage Plugin</name>
@@ -16,6 +16,7 @@
         <clobbers target="window.plugins.JSONStorage" />
     </js-module>
 
+    <dependency id="cordova-plugin-inappbrowser" url="https://github.com/apache/cordova-plugin-inappbrowser.git" />
     <dependency id="cordova-plugin-keychain" url="https://github.com/RangerRick/KeychainPlugin.git" />
 
     <!-- browser -->
@@ -25,7 +26,7 @@
     <!-- ios -->
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
-            <feature name="JSONStorage">
+            <feature name="CordovaJSONStorage">
                 <param name="ios-package" value="ONMSJSONStorage"/>
             </feature>
         </config-file>
@@ -42,7 +43,7 @@
     <!--android -->
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
-            <feature name="JSONStorage">
+            <feature name="CordovaJSONStorage">
                 <param name="android-package" value="org.opennms.cordova.storage.JSONStoragePlugin"/>
             </feature>
         </config-file>
