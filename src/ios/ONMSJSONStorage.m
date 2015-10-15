@@ -109,16 +109,31 @@
   [self.commandDelegate runInBackground:^{
     NSString *path = [command.arguments objectAtIndex:0];
     NSError *error;
+
+    NSFileManager *manager = [NSFileManager defaultManager];
+
     NSArray *results = [self readDirectory:path error:&error];
     if (error) {
       [self returnError:error forCommand:command];
       return;
     }
+    NSMutableArray *matched = [NSMutableArray array];
+    BOOL isDir = NO;
+    BOOL exists = NO;
+
+    for (id entry in results) {
+      NSString *dirName = [self getFilePath:path];
+      exists = [manager fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", dirName, entry] isDirectory:&isDir];
+      NSLog(@"dirName = %@, entry = %@, exists = %@, isDirectory = %@", dirName, entry, exists? @"YES":@"NO", isDir? @"YES":@"NO");
+      if (!isDir) {
+        [matched addObject:entry];
+      }
+    }
 
     NSDictionary *jsonObj = [ [NSDictionary alloc]
                              initWithObjectsAndKeys :
                              @YES, @"success",
-                             results, @"contents",
+                             matched, @"contents",
                              nil
                              ];
 

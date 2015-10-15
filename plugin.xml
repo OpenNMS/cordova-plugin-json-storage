@@ -26,7 +26,7 @@
     <!-- ios -->
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
-            <feature name="CordovaJSONStorage">
+            <feature name="LocalJSONStorage">
                 <param name="ios-package" value="ONMSJSONStorage"/>
             </feature>
         </config-file>
@@ -34,25 +34,23 @@
         <header-file src="src/ios/ONMSJSONStorage.h" />
         <source-file src="src/ios/ONMSJSONStorage.m" />
         
-        <!--
+        <framework custom="true" src="lib/ios/DropboxSDK.framework"/>
+        <framework src="QuartzCore.framework" />
         <framework src="Security.framework" />
-        <framework src="SystemConfiguration.framework" />
-        -->
     </platform>
 
     <!--android -->
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
-            <feature name="CordovaJSONStorage">
-                <param name="android-package" value="org.opennms.cordova.storage.JSONStoragePlugin"/>
+            <feature name="LocalJSONStorage">
+                <param name="android-package" value="org.opennms.cordova.storage.LocalStoragePlugin"/>
             </feature>
         </config-file>
 
-        <!--
-        <framework src="com.google.android.gms:play-services-base:+" />
-        -->
-
-        <source-file src="src/android/org/opennms/cordova/storage/JSONStoragePlugin.java" target-dir="src/org/opennms/cordova/storage/" />
+        <source-file src="src/android/org/opennms/cordova/storage/LocalStoragePlugin.java" target-dir="src/org/opennms/cordova/storage/" />
         <source-file src="src/android/org/opennms/cordova/storage/JSONStorageResult.java" target-dir="src/org/opennms/cordova/storage/" />
+
+        <source-file src="lib/android/dropbox-android-sdk-1.6.3.jar" target-dir="libs"/>
+        <source-file src="lib/android/json_simple-1.1.jar" target-dir="libs"/>
     </platform>
 </plugin>

@@ -3,21 +3,11 @@
 'use strict';
 
 /* global console */
+/* global navigator */
 /* global require */
 /* global window */
 
 var CordovaKeychain = require('cordova-plugin-keychain.CordovaKeychain');
-
-if (typeof String.prototype.startsWith !== 'function') {
-	String.prototype.startsWith = function(str) {
-		return this.lastIndexOf(str, 0) === 0;
-	};
-}
-if (typeof String.prototype.endsWith !== 'function') {
-	String.prototype.endsWith = function(suffix) {
-		return this.indexOf(suffix, this.length - suffix.length) !== -1;
-	};
-}
 
 function KeychainBackend() {
 	var kc = new CordovaKeychain();
@@ -38,8 +28,8 @@ function KeychainBackend() {
 		*/
   	};
 
-	var encode = function(str) {
-		return JSON.stringify(str);
+	var encode = function(obj) {
+		return JSON.stringify(obj);
 	};
 
 	var decode = function(str) {
@@ -93,7 +83,7 @@ function KeychainBackend() {
 	};
 
 	this.isValid = function() {
-		if (kc && kc.getForKey) {
+		if (kc && kc.getForKey && /iPhone|iPad|iPod/.test(navigator.userAgent)) {
 			return true;
 		} else {
 			return false;
@@ -178,10 +168,13 @@ function KeychainBackend() {
 			var replace = new RegExp('^' + prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
 			for (i=0; i < len; i++) {
 				entry = index[i];
-				if (path === '' && !entry.startsWith('/')) {
+				if (path === '' && !entry.startsWith('/') && entry.indexOf('/') < 0) {
 					ret.push(entry);
 				} else if (entry.startsWith(prefix)) {
-					ret.push(entry.replace(replace, ''));
+					entry = entry.replace(replace, '');
+					if (entry.indexOf('/') < 0) {
+						ret.push(entry);
+					}
 				}
 			}
 

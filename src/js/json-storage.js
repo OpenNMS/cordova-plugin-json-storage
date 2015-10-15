@@ -14,13 +14,11 @@
 /* global LocalBackend */
 /* global MemoryBackend */
 
-var backends = {};
-var defaultBackend;
-var options = {
-	debug: false,
-};
+var backends = {},
+	defaultBackend,
+	options = {debug:false},
+	_initialized = false;
 
-var _initialized = false;
 function assertInitialized() {
 	if (_initialized) { return; }
 	_initialized = true;
@@ -28,10 +26,10 @@ function assertInitialized() {
 	console.log('JSONStorage: Initializing.');
 
 	var attemptedBackends = [
-		new DropboxBackend(),
-		new KeychainBackend(),
-		new LocalBackend(),
-		new MemoryBackend()
+		new DropboxBackend(options),
+		new KeychainBackend(options),
+		new LocalBackend(options),
+		new MemoryBackend(options)
 	], i, len = attemptedBackends.length, be;
 
 	if (options.debug) {
@@ -85,6 +83,11 @@ var JSONStorage = {
 	},
 	setDebug: function(d) {
 		options.debug = !!d;
+		return options.debug;
+	},
+	setOptions: function(o) {
+		options = o;
+		return options;
 	},
 	getDefaultBackend: function() {
 		return defaultBackend;
@@ -185,6 +188,9 @@ if (typeof angular !== "undefined") {
 		return {
 			setDebug: function(debug) {
 				return JSONStorage.setDebug(debug);
+			},
+			setOptions: function(options) {
+				return JSONStorage.setOptions(options);
 			},
 			setDefaultBackend: function(backend) {
 				return makePromise(JSONStorage.setDefaultBackend, [backend]);

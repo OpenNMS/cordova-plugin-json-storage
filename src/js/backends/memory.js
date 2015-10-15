@@ -64,7 +64,10 @@ MemoryBackend.prototype.listFiles = function(path, success, failure) {
 		if (file.indexOf(path) === 0) {
 			found = true;
 			if (self.data[file] !== "\0") {
-				ret.push(file.substr(path.length));
+				file = file.substr(path.length);
+				if (file.indexOf('/') < 0) {
+					ret.push(file);
+				}
 			}
 		}
 	}

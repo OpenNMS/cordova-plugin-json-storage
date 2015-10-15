@@ -18,8 +18,8 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
-public class JSONStoragePlugin extends CordovaPlugin {
-    private static final String TAG = "JSONStoragePlugin";
+public class LocalStoragePlugin extends CordovaPlugin {
+    private static final String TAG = "LocalStoragePlugin";
 
     @Override
     public boolean execute(final String action, final CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
@@ -130,7 +130,9 @@ public class JSONStoragePlugin extends CordovaPlugin {
         Arrays.sort(entries);
         final JSONArray ret = new JSONArray();
         for (final File entry : entries) {
-            ret.put(entry.getName());
+            if (!entry.isDirectory()) {
+                ret.put(entry.getName());
+            }
         }
         return new JSONStorageResult(true, ret);
     }
@@ -150,7 +152,7 @@ public class JSONStoragePlugin extends CordovaPlugin {
         boolean ret = true;
         if (path.isDirectory()) {
             for (final File f : path.listFiles()) {
-                ret = ret && JSONStoragePlugin.deleteRecursive(f);
+                ret = ret && LocalStoragePlugin.deleteRecursive(f);
             }
         }
         return ret && path.delete();

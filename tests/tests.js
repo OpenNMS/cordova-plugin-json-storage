@@ -2,6 +2,11 @@ exports.defineAutoTests = function() {
 	'use strict';
 
 	beforeEach(function() {
+		console.log('setting up JSONStorage');
+		window.plugins.JSONStorage.setOptions({
+			dropboxAppKey: 'kxosloqvbhd0pup',
+		});
+		window.plugins.JSONStorage.setDebug(true);
 		window.plugins.JSONStorage._.init();
 	});
 
@@ -11,7 +16,7 @@ exports.defineAutoTests = function() {
 		});
 	});
 
-	//var backends = [];
+	//var backends = ['dropbox'];
 	var backends = ['local', 'memory'];
 
 	if (navigator.userAgent.indexOf('Android') > 0) {
@@ -39,7 +44,7 @@ exports.defineAutoTests = function() {
 			});
 			it('should not find a file', function(done) {
 				window.plugins.JSONStorage.readFile(
-					'foo/test.json',
+					'foo/bar/test.json',
 					function success(s) {
 						console.log('success should not happen: ' + JSON.stringify(s));
 					},
@@ -54,7 +59,7 @@ exports.defineAutoTests = function() {
 			});
 			it('should error when there is no directory to list', function(done) {
 				window.plugins.JSONStorage.listFiles(
-					'foo',
+					'foo/bar',
 					function success(s) {
 						console.log('success should not happen: ' + JSON.stringify(s));
 					},
@@ -69,7 +74,7 @@ exports.defineAutoTests = function() {
 			});
 			it('should write a test.json to the foo directory', function(done) {
 				window.plugins.JSONStorage.writeFile(
-					'foo/test.json',
+					'foo/bar/test.json',
 					{boo:'yah'},
 					function success(s) {
 						expect(s).toBeDefined();
@@ -84,7 +89,7 @@ exports.defineAutoTests = function() {
 			});
 			it('should list one file', function(done) {
 				window.plugins.JSONStorage.listFiles(
-					'foo',
+					'foo/bar',
 					function success(s) {
 						expect(s).toBeDefined();
 						expect(s.success).toBeDefined();
@@ -100,12 +105,28 @@ exports.defineAutoTests = function() {
 			});
 			it('should retrieve the contents of the file', function(done) {
 				window.plugins.JSONStorage.readFile(
-					'foo/test.json',
+					'foo/bar/test.json',
 					function success(s) {
 						expect(s).toBeDefined();
 						expect(s.success).toBeDefined();
 						expect(s.success).toBe(true);
 						expect(s.contents.boo).toBe('yah');
+						done();
+					},
+					function failure(err) {
+						console.log('error should not happen: ' + JSON.stringify(err));
+					},
+					backend
+				);
+			});
+			it('should list no files if there are only subdirectories', function(done) {
+				window.plugins.JSONStorage.listFiles(
+					'foo',
+					function success(s) {
+						expect(s).toBeDefined();
+						expect(s.success).toBeDefined();
+						expect(s.success).toBe(true);
+						expect(s.contents).toEqual([]);
 						done();
 					},
 					function failure(err) {
