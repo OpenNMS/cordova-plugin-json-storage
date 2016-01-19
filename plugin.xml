@@ -34,7 +34,7 @@
         <header-file src="src/ios/ONMSJSONStorage.h" />
         <source-file src="src/ios/ONMSJSONStorage.m" />
         
-        <framework custom="true" src="lib/ios/DropboxSDK.framework"/>
+        <!--<framework custom="true" src="lib/ios/DropboxSDK.framework"/>-->
         <framework src="QuartzCore.framework" />
         <framework src="Security.framework" />
     </platform>
@@ -50,7 +50,7 @@
         <source-file src="src/android/org/opennms/cordova/storage/LocalStoragePlugin.java" target-dir="src/org/opennms/cordova/storage/" />
         <source-file src="src/android/org/opennms/cordova/storage/JSONStorageResult.java" target-dir="src/org/opennms/cordova/storage/" />
 
-        <source-file src="lib/android/dropbox-android-sdk-1.6.3.jar" target-dir="libs"/>
+        <!--<source-file src="lib/android/dropbox-android-sdk-1.6.3.jar" target-dir="libs"/>-->
         <source-file src="lib/android/json_simple-1.1.jar" target-dir="libs"/>
     </platform>
 </plugin>
